@@ -5,7 +5,7 @@ description: |
   Instruction to reflect upon problem with brief pointers
   (characterize, describe typical mistakes, plan)
   before solving it step by step.
-tasks: [logiqa, logiqa-2, lsat-ar, lsat-rc, lsat-lr]
+tasks: [logiqa, logiqa2, lsat-ar, lsat-rc, lsat-lr]
 model: mlabonne/NeuralBeagle14-7B
 modelkwargs:
   max_new_tokens: 1024 

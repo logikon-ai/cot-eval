@@ -6,7 +6,7 @@ description: |
   before solving it step by step.
 tasks:
   - logiqa
-  - logiqa-2
+  - logiqa2
   - lsat-ar
   - lsat-rc
   - lsat-lr
