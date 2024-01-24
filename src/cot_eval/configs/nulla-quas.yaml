@@ -1,12 +1,12 @@
 name: nulla-quas
 cot_chain: ReflectBeforeRun
 description: |
-  NeuralBeagle14-7B -- Sampling --
+  Mistral-7B-Instruct -- Sampling --
   Instruction to reflect upon problem with brief pointers
   (characterize, describe typical mistakes, plan)
   before solving it step by step.
 tasks: [logiqa, logiqa2, lsat-ar, lsat-rc, lsat-lr]
-model: mlabonne/NeuralBeagle14-7B
+model: mistralai/Mistral-7B-Instruct-v0.2
 modelkwargs:
   max_new_tokens: 1024 
   temperature: 0.3 
