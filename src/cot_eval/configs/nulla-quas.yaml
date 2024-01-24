@@ -14,6 +14,7 @@ modelkwargs:
   top_p: .95 
   trust_remote_code: true
   vllm_kwargs:
+    load_format: safetensors
     gpu_memory_utilization: 0.9
     seed: 42
     

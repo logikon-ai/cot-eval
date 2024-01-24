@@ -74,7 +74,7 @@ def run_chain_on_task(task_ds: Dataset, chain: Runnable) -> Dataset:
         reasoning_traces = chain.batch(input_batch)
         return {"reasoning_traces": reasoning_traces}
 
-    task_ds = task_ds.map(add_resaoning, batched=True, batch_size=256)
+    task_ds = task_ds.map(add_resaoning, batched=True, batch_size=2048)
     return task_ds
 
 def main():
@@ -115,14 +115,14 @@ def main():
     logging.info(f"Building COT chain {config.cot_chain}")
     chain = CHAIN_REGISTRY[config.cot_chain].build(llm)
 
-    # Test run COT chain
-    logging.info("Testing COT chain")
-    test_input = [
-        {"passage": "This is a test passage", "question_options": "This is a test question"},
-        {"passage": "This is a further test passage", "question_options": "This is a test question"},
-    ]
-    test_traces = chain.batch(test_input)
-    logging.info(f"Tested COT chain: {test_traces}")
+    ## Test run COT chain
+    #logging.info("Testing COT chain")
+    #test_input = [
+    #    {"passage": "This is a test passage", "question_options": "This is a test question"},
+    #    {"passage": "This is a further test passage", "question_options": "This is a test question"},
+    #]
+    #test_traces = chain.batch(test_input)
+    #logging.info(f"Tested COT chain: {test_traces}")
 
     # Run COT chain on tasks
     cot_data: dict[str, Dataset] = {}
