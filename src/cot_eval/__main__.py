@@ -136,7 +136,7 @@ def main():
     for task, ds in cot_data.items():
         ds.push_to_hub(
             repo_id=args.upload_dataset,
-            name=f"{config.name}-{task}",
+            config_name=f"{config.name}-{task}",
             split=Split.TEST,
             commit_message=f"Add reasoning dataset for config {config.name} and task {task}",
             commit_description=config.to_yaml(),
