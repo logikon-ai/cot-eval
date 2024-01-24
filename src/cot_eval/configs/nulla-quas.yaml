@@ -1,0 +1,19 @@
+name: nulla-quas
+cot_chain: ReflectBeforeRun
+description: |
+  NeuralBeagle14-7B -- Sampling --
+  Instruction to reflect upon problem with brief pointers
+  (characterize, describe typical mistakes, plan)
+  before solving it step by step.
+tasks: [logiqa, logiqa-2, lsat-ar, lsat-rc, lsat-lr]
+model: mlabonne/NeuralBeagle14-7B
+model_kwargs:
+  max_new_tokens: 1024 
+  temperature: 0.3 
+  top_k: 100
+  top_p: .95 
+  trust_remote_code: true
+  vllm_kwargs:
+    gpu-memory-utilization: 0.9
+    seed: 42
+    

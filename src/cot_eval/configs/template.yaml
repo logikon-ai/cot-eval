@@ -1,0 +1,26 @@
+name: nulla-quas
+cot_chain: ReflectBeforeRun
+description: |
+  Instruction to reflect upon problem with brief pointers
+  (characterize, describe typical mistakes, plan)
+  before solving it step by step.
+tasks:
+  - logiqa
+  - logiqa-2
+  - lsat-ar
+  - lsat-rc
+  - lsat-lr
+model: mlabonne/NeuralBeagle14-7B
+model_kwargs:
+  best_of: 1 # Number of output sequences that are generated from the prompt.
+  dtype: auto # The data type for the model weights and activations.
+  max_new_tokens: 1024 # Maximum number of tokens to generate per output sequence.
+  n: 1 # Number of output sequences to return for the given prompt.
+  temperature: 1.0 # Float that controls the randomness of the sampling.
+  top_k: -1 # Integer that controls the number of top tokens to consider.
+  top_p: 1.0 # Float that controls the cumulative probability of the top tokens to consider.
+  trust_remote_code: true # Trust remote code (e.g., from HuggingFace) when downloading the model and tokenizer.
+  use_beam_search: false # Whether to use beam search instead of sampling
+  vllm_kwargs:
+    gpu-memory-utilization: 0.9
+    seed: 42

@@ -1,0 +1,99 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cot-eval"
+dynamic = ["version"]
+description = ''
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Gregor Betz", email = "3662782+ggbetz@users.noreply.github.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "faker",
+  "langchain",
+  "pydantic",
+  "datasets",
+]
+
+# required to include yaml files in pip installation
+[tool.setuptools.package-data]
+lm_eval = ["**/*.yaml", "configs/**/*"]
+
+[project.scripts]
+cot-eval = "cot_eval.__main__:main"
+
+[project.urls]
+Documentation = "https://github.com/unknown/cot-eval#readme"
+Issues = "https://github.com/unknown/cot-eval/issues"
+Source = "https://github.com/unknown/cot-eval"
+
+[tool.hatch.version]
+path = "src/cot_eval/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+]
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+[tool.hatch.envs.cuda]
+dependencies = [
+  "vllm",
+  "python-dotenv",
+]
+
+[tool.hatch.envs.types]
+dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/cot_eval tests}"
+
+[tool.coverage.run]
+source_pkgs = ["cot_eval", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/cot_eval/__about__.py",
+]
+
+[tool.coverage.paths]
+cot_eval = ["src/cot_eval", "*/cot-eval/src/cot_eval"]
+tests = ["tests", "*/cot-eval/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
