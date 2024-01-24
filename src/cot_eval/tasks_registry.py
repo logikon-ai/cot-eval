@@ -8,7 +8,7 @@ TASKS_REGISTRY = {
   },
   "logiqa2": {
     "path": "logikon/logikon-bench",
-    "name": "logiqa-2",
+    "name": "logiqa2",
     "split": "test",
   },
   "lsat-ar": {
