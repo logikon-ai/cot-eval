@@ -6,7 +6,7 @@ TASKS_REGISTRY = {
     "name": "logiqa",
     "split": "test",
   },
-  "logiqa-2": {
+  "logiqa2": {
     "path": "logikon/logikon-bench",
     "name": "logiqa-2",
     "split": "test",
