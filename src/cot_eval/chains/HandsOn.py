@@ -6,8 +6,8 @@ from langchain_community.llms import VLLM
 from cot_eval import COTChain
 
 
-class ReflectBeforeRun(COTChain):
-    """ReflectBeforeRun COT chain builder based on langchain"""
+class HandsOn(COTChain):
+    """HandsOn COT chain builder based on langchain"""
 
     prompt_template = """### User
     
@@ -23,12 +23,7 @@ Read the following passage and question carefully. They define the problem to so
 {question_options}
 </question>
 
-Take a deep breadth -- and think carefully, step by step. Rmember: Sometimes it's useful to take a step back and reflect on the problem. The following more specific instructions may help you to do so:
-
-* Characterize the decision problem in abstract terms.
-* Identify common mistakes for this kind of problem, which you should try to avoid.
-* Sketch a plan for how to solve this problem.
-* Solve the problem, carefully and step by step, following your plan.
+Take a deep breadth -- and think carefully, step by step.
 
 Use the closing tag </reasoning> to indicate when you're done.
 
