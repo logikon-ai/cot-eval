@@ -1,5 +1,7 @@
 """Config Class for COT evaluations"""
 
+from typing import Optional
+
 from pydantic import BaseModel
 import yaml
 
@@ -10,11 +12,11 @@ class COTEvalConfig(BaseModel):
     """Name of the COT evaluation config"""
     cot_chain: str
     """Name of the COTchain to use, must be registered in chain_registry.py"""
-    description: str
+    description: Optional[str]
     """Description of the COT evaluation config"""
     model: str
     """HF Repo with model weights and config"""
-    model_kwargs: dict
+    modelkwargs: Optional[dict]
     """model kwargs to passed to model init function"""
     tasks: list
     """Tasks to evaluate on"""

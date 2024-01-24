@@ -8,8 +8,8 @@ from langchain_community.llms import VLLM
 class COTChain(abc.ABC):
     """Abstract Base Class for COT chain builders based on langchain"""
 
-    @abc.abstractmethod
     @classmethod
+    @abc.abstractmethod
     def build(cls, llm: VLLM) -> Runnable:
         """Build chain
 

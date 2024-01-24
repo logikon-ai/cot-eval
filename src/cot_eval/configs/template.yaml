@@ -11,7 +11,7 @@ tasks:
   - lsat-rc
   - lsat-lr
 model: mlabonne/NeuralBeagle14-7B
-model_kwargs:
+modelkwargs:
   best_of: 1 # Number of output sequences that are generated from the prompt.
   dtype: auto # The data type for the model weights and activations.
   max_new_tokens: 1024 # Maximum number of tokens to generate per output sequence.

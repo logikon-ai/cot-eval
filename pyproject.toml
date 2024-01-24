@@ -35,6 +35,12 @@ dependencies = [
 [tool.setuptools.package-data]
 lm_eval = ["**/*.yaml", "configs/**/*"]
 
+[project.optional-dependencies]
+cuda = [
+  "vllm",
+  "python-dotenv",
+]
+
 [project.scripts]
 cot-eval = "cot_eval.__main__:main"
 

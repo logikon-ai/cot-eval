@@ -7,7 +7,7 @@ description: |
   before solving it step by step.
 tasks: [logiqa, logiqa-2, lsat-ar, lsat-rc, lsat-lr]
 model: mlabonne/NeuralBeagle14-7B
-model_kwargs:
+modelkwargs:
   max_new_tokens: 1024 
   temperature: 0.3 
   top_k: 100

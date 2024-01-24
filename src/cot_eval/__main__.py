@@ -10,7 +10,7 @@ from datasets import load_dataset, Dataset, Split
 from langchain_core.runnables import Runnable
 from langchain_community.llms import VLLM
 
-from cot_eval import COTEvalConfig
+from cot_eval.COTEvalConfig import COTEvalConfig
 from cot_eval.chain_registry import CHAIN_REGISTRY
 from cot_eval.tasks_registry import TASKS_REGISTRY
 
@@ -108,7 +108,7 @@ def main():
     logging.info(f"Loading vLLM model {config.model}")
     llm = VLLM(
         model=config.model,
-        **config.model_kwargs,
+        **config.modelkwargs,
     )
 
     # Build COT chain
