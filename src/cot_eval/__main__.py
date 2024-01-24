@@ -6,7 +6,7 @@ import logging
 import argparse
 import numpy as np
 
-from datasets import load_dataset, Dataset, Split
+from datasets import load_dataset, Dataset
 from langchain_core.runnables import Runnable
 from langchain_community.llms import VLLM
 
@@ -137,7 +137,7 @@ def main():
         ds.push_to_hub(
             repo_id=args.upload_dataset,
             config_name=f"{config.name}-{task}",
-            split=Split.TEST,
+            split="test",
             commit_message=f"Add reasoning dataset for config {config.name} and task {task}",
             commit_description=config.to_yaml(),
             token=hftoken,
