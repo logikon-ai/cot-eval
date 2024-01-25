@@ -10,7 +10,7 @@ tasks:
   - lsat-ar
   - lsat-rc
   - lsat-lr
-model: mlabonne/NeuralBeagle14-7B
+model: mistralai/Mistral-7B-Instruct-v0.2
 modelkwargs:
   best_of: 1 # Number of output sequences that are generated from the prompt.
   dtype: auto # The data type for the model weights and activations.

@@ -1,0 +1,6 @@
+"task": "nulla-quas_logiqa_base"
+"dataset_path": "logikon/cot-eval-traces"
+"dataset_kwargs":
+  "data_files":
+    "test": "nulla-quas-logiqa/test-00000-of-00001.parquet"
+"include": "_logikon_template_yaml"
