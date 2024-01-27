@@ -1,8 +1,7 @@
 #!bin/bash
 
-MODEL="mistralai/Mistral-7B-Instruct-v0.2"
-CHAIN="HandsOn"
-MODELKWARGS="{temperature: .3, top_k: 100, top_p: .95}"  # YAML format
+CHAINS="HandsOn" # "HandsOn,PlanAndExecute"
+MODELKWARGS="[{temperature: .3, top_k: 100, top_p: .95},{temperature: 0},{use_beam_search: true, best_of: 1, n: 4}]"  # YAML format
 TASKS="logiqa,logiqa2,lsat-ar,lsat-rc,lsat-lr"
 OUTPUT_DIR="./eleuther/output"
 TRUST_REMOTE_CODE=true
@@ -10,31 +9,43 @@ MAX_LENGTH=4096
 DO_BASEEVAL=true
 modelbase="$(basename -- $MODEL)"
 
-# create config
+
+# lookup model to-be evaluated
+python scripts/lookup_pending_model.py &
+MODEL=$!
+echo "Model to be evaluated: $MODEL"
+
+#MODEL="mistralai/Mistral-7B-Instruct-v0.2"
+
+
+# create configs
 python scripts/create_config.py \
     --model $MODEL \
-    --chain $CHAIN \
+    --chain $CHAINS \
     --model_kwargs $MODELKWARGS \
-    --tasks $tasks \
+    --tasks $TASKS \
     --output_dir src/cot_eval/configs &
-CONFIGNAME=$!
-echo "Created config: $CONFIGNAME"
+CONFIGNAMES=$!
+echo "Created configs: $CONFIGNAMES"
 
 
 # create lm-eval-harness tasks
 ## includes tasks with and without cot traces
 python scripts/create_lm_eval_harness_tasks.py \
-    --config ./$CONFIGNAME \
+    --configs $CONFIGNAMES \
     --output_dir eleuther/tasks/logikon
 HARNESS_TASKS=$!
 echo "Created lm-eval-harness tasks: $HARNESS_TASKS"
 
 
 # run cot_eval to create reasoning traces
-python cot_eval \
-    --config $CONFIGNAME \
-    --hftoken $HUGGINGFACEHUB_API_TOKEN
-
+arrCONFIGNAMES=(${CONFIGNAMES//,/ })
+for config in "${arrCONFIGNAMES[@]}"
+do
+    python cot_eval \
+        --config $config \
+        --hftoken $HUGGINGFACEHUB_API_TOKEN
+done
 
 # run lm-eval BASE for each of the tasks
 if [ "$DO_BASEEVAL" = true ] ; then

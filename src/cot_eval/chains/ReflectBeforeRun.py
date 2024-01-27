@@ -26,9 +26,9 @@ Read the following passage and question carefully. They define the problem to so
 Take a deep breadth -- and think carefully, step by step. Rmember: Sometimes it's useful to take a step back and reflect on the problem. The following more specific instructions may help you to do so:
 
 * Characterize the decision problem in abstract terms.
-* Identify common mistakes for this kind of problem, which you should try to avoid.
+* Identify common mistakes for this kind of problem.
 * Sketch a plan for how to solve this problem.
-* Solve the problem, carefully and step by step, following your plan.
+* Solve the problem, carefully and step by step, following your plan and avoiding the common mistakes.
 
 Use the closing tag </reasoning> to indicate when you're done.
 
