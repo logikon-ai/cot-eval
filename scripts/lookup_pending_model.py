@@ -5,6 +5,7 @@ import sys
 from dataclasses import dataclass
 from typing import Optional
 
+import argparse
 from huggingface_hub import HfApi, snapshot_download
 
 TOKEN = os.environ.get("HUGGINGFACEHUB_API_TOKEN") # A read/write token for your org
@@ -40,6 +41,12 @@ class EvalRequest:
             raise Exception(f"Unknown precision {self.precision}.")
         
         return model_args
+
+
+def parse_eval_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", type=str, default=None)
+    return parser.parse_args()
 
 
 def set_eval_request(eval_request: EvalRequest, set_to_status: str, hf_repo: str, local_dir: str):
@@ -85,6 +92,12 @@ def get_eval_requests(job_status: list, local_dir: str, hf_repo: str) -> list[Ev
 
 
 def main():
+
+    args = parse_eval_args()
+    if args.output is None:
+        print("No output file specified.", file=sys.stderr)
+        return
+
     eval_requests = get_eval_requests("PENDING", LOCAL_DIR, REQUESTS_REPO)
 
     if not eval_requests:
@@ -97,7 +110,14 @@ def main():
     next_eval_request = eval_requests[0]
     # set status to running
     set_eval_request(next_eval_request, "RUNNING", REQUESTS_REPO, LOCAL_DIR)
-    print(f"{next_eval_request.model},{next_eval_request.revision}")
+
+    # write model args to output file
+    next_model = {
+        "model": next_eval_request.model,
+        "revision": next_eval_request.revision,
+    }
+    with open(args.output, "w") as f:
+        json.dump(next_model, f)
 
 if __name__ == "__main__":
     main()
