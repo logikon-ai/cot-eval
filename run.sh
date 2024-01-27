@@ -1,7 +1,7 @@
 #!bin/bash
 
 CHAINS="HandsOn" # "HandsOn,PlanAndExecute"
-MODELKWARGS="[{temperature: .3, top_k: 100, top_p: .95},{temperature: 0},{use_beam_search: true, best_of: 1, n: 4}]"  # YAML format
+MODELKWARGS='[{temperature: .3, top_k: 100, top_p: .95},{temperature: 0},{use_beam_search: true, best_of: 1, n: 4}]'  # YAML format
 TASKS="logiqa,logiqa2,lsat-ar,lsat-rc,lsat-lr"
 OUTPUT_DIR="./eleuther/output"
 TRUST_REMOTE_CODE=true
@@ -20,22 +20,12 @@ python scripts/create_cot_configs.py \
     --model $model \
     --revision $revision \
     --chains $CHAINS \
-    --model_kwargs $MODELKWARGS \
+    --model_kwargs "$MODELKWARGS" \
     --tasks $TASKS \
     --output_dir src/cot_eval/configs \
     --keys_file ./config_keys.txt
 configkeys=$(cat config_keys.txt)  # format is "config1,config2,config3"
 echo "Created configs: $configkeys"
-
-
-# create lm-eval-harness tasks
-## includes tasks with and without cot traces
-python scripts/create_lm_eval_harness_tasks.py \
-    --configs $configkeys \
-    --output_dir eleuther/tasks/logikon
-    --keys_file ./lm_eval_harness_tasks.txt
-harness_tasks=$(cat lm_eval_harness_tasks.txt)  # format is "task1,task2,task3"
-echo "Created lm-eval-harness tasks: $harness_tasks"
 
 
 # run cot_eval to create reasoning traces
@@ -46,6 +36,17 @@ do
         --config $config \
         --hftoken $HUGGINGFACEHUB_API_TOKEN
 done
+
+
+# create lm-eval-harness tasks
+## includes tasks with and without cot traces
+python scripts/create_lm_eval_harness_tasks.py \
+    --configs $configkeys \
+    --output_dir eleuther/tasks/logikon \
+    --keys_file ./lm_eval_harness_tasks.txt
+harness_tasks=$(cat lm_eval_harness_tasks.txt)  # format is "task1,task2,task3"
+echo "Created lm-eval-harness tasks: $harness_tasks"
+
 
 # run lm-eval BASE for each of the tasks
 if [ "$DO_BASEEVAL" = true ] ; then

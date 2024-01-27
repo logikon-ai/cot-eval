@@ -1,0 +1,79 @@
+"""script for creating lm-eval-harness tasks
+includes tasks with and without cot traces
+
+usage: 
+python scripts/create_lm_eval_harness_tasks.py \
+    --configs $configkeys \
+    --output_dir eleuther/tasks/logikon \
+    --keys_file ./lm_eval_harness_tasks.txt
+"""
+
+import argparse
+import logging
+import os
+import yaml
+
+
+logging.basicConfig(level=logging.INFO)
+
+
+def parse_eval_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--configs", type=str, default=None)
+    parser.add_argument("--configs_dir", type=str, default="src/cot_eval/configs")
+    parser.add_argument("--traces_dataset_path", type=str, default="logikon/cot-eval-traces")
+    parser.add_argument("--output_dir", type=str, default=None)
+    parser.add_argument("--keys_file", type=str, default=None)
+    return parser.parse_args()
+
+
+def main():
+
+    args = parse_eval_args()
+    if args.keys_file is None:
+        raise ValueError("keys_file must be specified")
+    if args.configs is None:
+        raise ValueError("chain must be specified")
+    if args.output_dir is None:
+        raise ValueError("output_dir must be specified")
+    if not os.path.isdir(args.output_dir):
+        raise ValueError("output_dir must be a directory")
+    if not os.path.isdir(args.configs_dir):
+        raise ValueError(f"configs_dir is not a directory: {args.configs_dir}")
+
+    configs = args.configs.split(",")
+
+    created_harness_tasks_keys = []
+
+    for config_key in configs:
+        config_path = os.path.join(args.configs_dir, f"{config_key}.yaml")
+        with open(config_path, "r") as fp:
+            config = yaml.load(fp, Loader=yaml.SafeLoader)
+        
+        for task in config["tasks"]:
+            for subtype in ["base", "cot"]:
+                harness_task = {
+                    "task": f"{config['name']}_{task}_{subtype}",
+                    "dataset_path": args.traces_dataset_path,
+                    "dataset_kwargs": {
+                        "data_files": {
+                            "test": f"{config['name']}-logiqa/test-00000-of-00001.parquet"
+                        },
+                    },
+                    "include": f"_logikon_{subtype}_template_yaml"                
+                }
+
+                harness_task_path = os.path.join(args.output_dir, f"{harness_task['task']}.yaml")
+                with open(harness_task_path, "w") as fp:
+                    yaml.dump(harness_task, fp)
+
+                created_harness_tasks_keys.append(harness_task['task'])
+ 
+
+    with open(args.keys_file, "w") as fp:
+        fp.write(",".join(created_harness_tasks_keys))
+
+    logging.info(f"Created {len(created_harness_tasks_keys)} harness tasks.")
+                
+if __name__ == "__main__":
+    main()

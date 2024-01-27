@@ -1,9 +1,6 @@
 name: nulla-quas
 cot_chain: ReflectBeforeRun
-description: |
-  Instruction to reflect upon problem with brief pointers
-  (characterize, describe typical mistakes, plan)
-  before solving it step by step.
+description: Add brief description here if manually created.
 tasks:
   - logiqa
   - logiqa2

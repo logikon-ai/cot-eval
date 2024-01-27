@@ -89,6 +89,7 @@ def main():
             config["model"] = args.model
             config["cot_chain"] = chain
             config["tasks"] = tasks
+            config["description"] = "Automatically created with create_cot_configs.py."
 
             if "modelkwargs" not in config:
                 config["modelkwargs"] = {}

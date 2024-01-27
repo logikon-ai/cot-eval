@@ -1,4 +1,4 @@
 "task": "logiqa2_base"
 "dataset_path": "logikon/logikon-bench"
 "dataset_name": "logiqa2"
-"include": "_logikon_template_yaml"
+"include": "_logikon_base_template_yaml"

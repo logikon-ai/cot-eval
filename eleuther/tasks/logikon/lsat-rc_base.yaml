@@ -1,4 +1,4 @@
 "task": "lsat-rc_base"
 "dataset_path": "logikon/logikon-bench"
 "dataset_name": "lsat-rc"
-"include": "_logikon_template_yaml"
+"include": "_logikon_base_template_yaml"
