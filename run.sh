@@ -12,10 +12,11 @@ DO_BASEEVAL=true
 python scripts/lookup_pending_model.py --keys_file ./next_model.json
 model=$(cat next_model.json | jq -r .model)
 revision=$(cat next_model.json | jq -r .revision)
-modelbase="$(basename -- $model)"
+#modelbase="$(basename -- $model)"
 echo "Model to evaluate: $model : $revision"
 
 # create configs
+# a 'config' defines how reasoning traces are generated for a given task
 python scripts/create_cot_configs.py \
     --model $model \
     --revision $revision \
@@ -28,7 +29,8 @@ configkeys=$(cat config_keys.txt)  # format is "config1,config2,config3"
 echo "Created configs: $configkeys"
 
 
-# run cot_eval to create reasoning traces
+# run cot_eval to create reasoning traces for every config (model and task)
+# reasoning traces are uploaded to huggingface hub
 arr_configkeys=(${configkeys//,/ })
 for config in "${arr_configkeys[@]}"
 do
@@ -39,21 +41,26 @@ done
 
 
 # create lm-eval-harness tasks
-## includes tasks with and without cot traces
+# a 'harness task' defines how to evaluate a given model on a given task,
+# specifically whether to include the model's reasoning traces or not
 python scripts/create_lm_eval_harness_tasks.py \
     --configs $configkeys \
     --output_dir eleuther/tasks/logikon \
-    --keys_file ./lm_eval_harness_tasks.txt
-harness_tasks=$(cat lm_eval_harness_tasks.txt)  # format is "task1,task2,task3"
-echo "Created lm-eval-harness tasks: $harness_tasks"
+    --keys_file ./lm_eval_harness_tasks.json
+harness_tasks_base=$(cat lm_eval_harness_tasks.json | jq -r .base) # format is "task1,task2,task3"
+harness_tasks_cot=$(cat lm_eval_harness_tasks.json | jq -r .cot) # format is "task1,task2,task3"
+echo "Created lm-eval-harness tasks base: $harness_tasks_base" # no cot
+echo "Created lm-eval-harness tasks cot: $harness_tasks_cot"
 
 
-# run lm-eval BASE for each of the tasks
+timestamp=$(date +"%y-%m-%d-%T")
+
+# run lm-eval BASE (unperturbed) for each task
 if [ "$DO_BASEEVAL" = true ] ; then
     arrTASKS=(${TASKS//,/ })
     for task in "${arrTASKS[@]}"
     do
-        output_path=$OUTPUT_DIR/${modelbase}/${task}_base.json
+        output_path=$OUTPUT_DIR/${model}/orig/results_${timestamp}.json
         if [ -f $output_path ]; then
             echo "Outputfile $FILE exists. Skipping task $task."
         else
@@ -70,17 +77,22 @@ fi
 
 
 ## run lm evaluation harness for each of the tasks
-arr_harness_tasks=(${harness_tasks//,/ })
-for task in "${arr_harness_tasks[@]}"
-do
-    lm-eval --model vllm \
-        --model_args pretrained=${model},revision=${revision},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
-        --tasks ${task} \
-        --num_fewshot 0 \
-        --batch_size auto \
-        --output_path $OUTPUT_DIR/${modelbase}/${task}.json \
-        --include_path ./eleuther/tasks/logikon
-done
+# without reasoning traces
+lm-eval --model vllm \
+    --model_args pretrained=${model},revision=${revision},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
+    --tasks ${harness_tasks_base} \
+    --num_fewshot 0 \
+    --batch_size auto \
+    --output_path $OUTPUT_DIR/${model}/base/${timestamp}.json \
+    --include_path ./eleuther/tasks/logikon
+# with reasoning traces
+lm-eval --model vllm \
+    --model_args pretrained=${model},revision=${revision},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
+    --tasks ${harness_tasks_cot} \
+    --num_fewshot 0 \
+    --batch_size auto \
+    --output_path $OUTPUT_DIR/${model}/cot/${timestamp}.json \
+    --include_path ./eleuther/tasks/logikon
 
 
 # collect and upload results
@@ -88,12 +100,13 @@ python scripts/upload_results.py \
     --model $model \
     --revision $revision \
     --tasks $TASKS \
-    --harness_tasks $harness_tasks \
-    --output_dir $OUTPUT_DIR \
-    --hftoken $HUGGINGFACEHUB_API_TOKEN
+    --timestamp $timestamp \
+    --output_dir $OUTPUT_DIR
+#    --harness_tasks_base $harness_tasks_base \
+#    --harness_tasks_cot $harness_tasks_cot
 
 # cleanup
 rm ./next_model.json
 rm ./config_keys.txt
-rm ./lm_eval_harness_tasks.txt
+rm ./lm_eval_harness_tasks.json
 

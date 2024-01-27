@@ -58,7 +58,7 @@ def main():
                     "dataset_path": args.traces_dataset_path,
                     "dataset_kwargs": {
                         "data_files": {
-                            "test": f"{config['name']}-logiqa/test-00000-of-00001.parquet"
+                            "test": f"{config['name']}-{task}/test-00000-of-00001.parquet"
                         },
                     },
                     "include": f"_logikon_{subtype}_template_yaml"                
