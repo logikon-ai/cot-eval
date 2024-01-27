@@ -85,7 +85,7 @@ def get_eval_requests(job_status: list, local_dir: str, hf_repo: str) -> list[Ev
 
 
 def main():
-    eval_requests = get_eval_requests("pending", LOCAL_DIR, REQUESTS_REPO)
+    eval_requests = get_eval_requests("PENDING", LOCAL_DIR, REQUESTS_REPO)
 
     if not eval_requests:
         print("No pending evaluation requests found.", file=sys.stderr)
@@ -96,7 +96,7 @@ def main():
 
     next_eval_request = eval_requests[0]
     # set status to running
-    set_eval_request(next_eval_request, "running", REQUESTS_REPO, LOCAL_DIR)
+    set_eval_request(next_eval_request, "RUNNING", REQUESTS_REPO, LOCAL_DIR)
     print(f"{next_eval_request.model},{next_eval_request.revision}")
 
 if __name__ == "__main__":
