@@ -71,6 +71,8 @@ def main():
                 created_harness_tasks_keys[subtype].append(harness_task['task'])
  
 
+    for key, value in created_harness_tasks_keys.items():
+        created_harness_tasks_keys[key] = ",".join(value)
     with open(args.keys_file, "w") as fp:
         # dump as json
         json.dump(created_harness_tasks_keys, fp)
