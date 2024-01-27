@@ -7,40 +7,40 @@ OUTPUT_DIR="./eleuther/output"
 TRUST_REMOTE_CODE=true
 MAX_LENGTH=4096
 DO_BASEEVAL=true
-modelbase="$(basename -- $MODEL)"
-
 
 # lookup model to-be evaluated
-python scripts/lookup_pending_model.py &
-MODEL=$!
-echo "Model to be evaluated: $MODEL"
-
-#MODEL="mistralai/Mistral-7B-Instruct-v0.2"
-
+python scripts/lookup_pending_model.py --keys_file ./next_model.json
+model=$(cat next_model.json | jq -r .model)
+revision=$(cat next_model.json | jq -r .revision)
+modelbase="$(basename -- $model)"
+echo "Model to evaluate: $model : $revision"
 
 # create configs
-python scripts/create_config.py \
-    --model $MODEL \
-    --chain $CHAINS \
+python scripts/create_cot_configs.py \
+    --model $model \
+    --revision $revision \
+    --chains $CHAINS \
     --model_kwargs $MODELKWARGS \
     --tasks $TASKS \
-    --output_dir src/cot_eval/configs &
-CONFIGNAMES=$!
-echo "Created configs: $CONFIGNAMES"
+    --output_dir src/cot_eval/configs \
+    --keys_file ./config_keys.txt
+configkeys=$(cat config_keys.txt)  # format is "config1,config2,config3"
+echo "Created configs: $configkeys"
 
 
 # create lm-eval-harness tasks
 ## includes tasks with and without cot traces
 python scripts/create_lm_eval_harness_tasks.py \
-    --configs $CONFIGNAMES \
+    --configs $configkeys \
     --output_dir eleuther/tasks/logikon
-HARNESS_TASKS=$!
-echo "Created lm-eval-harness tasks: $HARNESS_TASKS"
+    --keys_file ./lm_eval_harness_tasks.txt
+harness_tasks=$(cat lm_eval_harness_tasks.txt)  # format is "task1,task2,task3"
+echo "Created lm-eval-harness tasks: $harness_tasks"
 
 
 # run cot_eval to create reasoning traces
-arrCONFIGNAMES=(${CONFIGNAMES//,/ })
-for config in "${arrCONFIGNAMES[@]}"
+arr_configkeys=(${configkeys//,/ })
+for config in "${arr_configkeys[@]}"
 do
     python cot_eval \
         --config $config \
@@ -57,7 +57,7 @@ if [ "$DO_BASEEVAL" = true ] ; then
             echo "Outputfile $FILE exists. Skipping task $task."
         else
             lm-eval --model vllm \
-                --model_args pretrained=${MODEL},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
+                --model_args pretrained=${model},revision=${revision},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
                 --tasks ${task}_base \
                 --num_fewshot 0 \
                 --batch_size auto \
@@ -69,11 +69,11 @@ fi
 
 
 ## run lm evaluation harness for each of the tasks
-arrHARNESS_TASKS=(${HARNESS_TASKS//,/ })
-for task in "${arrHARNESS_TASKS[@]}"
+arr_harness_tasks=(${harness_tasks//,/ })
+for task in "${arr_harness_tasks[@]}"
 do
     lm-eval --model vllm \
-        --model_args pretrained=${MODEL},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
+        --model_args pretrained=${model},revision=${revision},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
         --tasks ${task} \
         --num_fewshot 0 \
         --batch_size auto \
@@ -84,8 +84,15 @@ done
 
 # collect and upload results
 python scripts/upload_results.py \
-    --model $MODEL \
+    --model $model \
+    --revision $revision \
     --tasks $TASKS \
-    --harness_tasks $HARNESS_TASKS \
+    --harness_tasks $harness_tasks \
     --output_dir $OUTPUT_DIR \
     --hftoken $HUGGINGFACEHUB_API_TOKEN
+
+# cleanup
+rm ./next_model.json
+rm ./config_keys.txt
+rm ./lm_eval_harness_tasks.txt
+
