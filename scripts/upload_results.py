@@ -68,6 +68,7 @@ def parse_eval_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, default=None)
     parser.add_argument("--revision", type=str, default="main")
+    parser.add_argument("--precision", type=str, default="")
     parser.add_argument("--tasks", type=str, default=None)
     parser.add_argument("--timestamp", type=str, default=None)
     parser.add_argument("--output_dir", type=str, default=None)
@@ -121,7 +122,7 @@ def get_leaderboard_record(
         model: str,
         revision: str,
         tasks: list,
-        timestamp: str,
+        precision: str,
         results_dataset: str
     ) -> dict:
     """aggregate raw results"""
@@ -177,9 +178,9 @@ def get_leaderboard_record(
 
     leaderboard_record = {
         "config": {
-            "model": model,
-            "revision": revision,
-            "timestamp": timestamp,
+            "model_dtype": precision,
+            "model_sha": revision,
+            "model_name": model,
         },
         "results": {
             task: {"delta_abs": max(deltas[task]), "delta_rel":  max(rates[task])}
@@ -225,7 +226,7 @@ def main():
 
 
     # update leaderboard
-    leaderboard_record = get_leaderboard_record(args.model, args.revision, tasks, args.timestamp, args.results_dataset)
+    leaderboard_record = get_leaderboard_record(args.model, args.revision, tasks, args.precision, args.results_dataset)
     with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as fp:
         json.dump(leaderboard_record, fp)
         fp.flush()

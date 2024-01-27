@@ -12,8 +12,8 @@ DO_BASEEVAL=true
 python scripts/lookup_pending_model.py --keys_file ./next_model.json
 model=$(cat next_model.json | jq -r .model)
 revision=$(cat next_model.json | jq -r .revision)
-#modelbase="$(basename -- $model)"
-echo "Model to evaluate: $model : $revision"
+precision=$(cat next_model.json | jq -r .precision)
+echo "Model to evaluate: $model : $revision. Precision: $precision"
 
 # create configs
 # a 'config' defines how reasoning traces are generated for a given task
@@ -99,6 +99,7 @@ lm-eval --model vllm \
 python scripts/upload_results.py \
     --model $model \
     --revision $revision \
+    --precision $precision \
     --tasks $TASKS \
     --timestamp $timestamp \
     --output_dir $OUTPUT_DIR

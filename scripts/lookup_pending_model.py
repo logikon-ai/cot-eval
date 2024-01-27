@@ -115,6 +115,7 @@ def main():
     next_model = {
         "model": next_eval_request.model,
         "revision": next_eval_request.revision,
+        "precision": next_eval_request.precision,
     }
     with open(args.keys_file, "w") as f:
         json.dump(next_model, f)
