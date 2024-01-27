@@ -10,6 +10,7 @@ python scripts/create_lm_eval_harness_tasks.py \
 
 import argparse
 import logging
+import json
 import os
 import yaml
 
@@ -43,7 +44,7 @@ def main():
 
     configs = args.configs.split(",")
 
-    created_harness_tasks_keys = []
+    created_harness_tasks_keys = {"base": [], "cot": []}
 
     for config_key in configs:
         config_path = os.path.join(args.configs_dir, f"{config_key}.yaml")
@@ -67,11 +68,12 @@ def main():
                 with open(harness_task_path, "w") as fp:
                     yaml.dump(harness_task, fp)
 
-                created_harness_tasks_keys.append(harness_task['task'])
+                created_harness_tasks_keys[subtype].append(harness_task['task'])
  
 
     with open(args.keys_file, "w") as fp:
-        fp.write(",".join(created_harness_tasks_keys))
+        # dump as json
+        json.dump(created_harness_tasks_keys, fp)
 
     logging.info(f"Created {len(created_harness_tasks_keys)} harness tasks.")
                 
