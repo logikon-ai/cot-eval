@@ -240,11 +240,11 @@ def main():
     # update eval request status to FINISHED
     eval_requests = get_eval_requests("RUNNING", LOCAL_DIR, REQUESTS_REPO)
     this_eval_request = next([e for e in eval_requests if e.model == args.model], None)
-    if not this_eval_request:
-        logging.warning(f"No running evaluation requests found for model {args.model}.")
-    else:
-        # set status to running
+    if this_eval_request is not None:
+        # set status to finished
         set_eval_request(this_eval_request, "FINISHED", REQUESTS_REPO, LOCAL_DIR)
+    else:
+        logging.warning(f"No running evaluation requests found for model {args.model}.")
 
 
 if __name__ == "__main__":
