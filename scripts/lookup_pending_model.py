@@ -88,7 +88,7 @@ def main():
     eval_requests = get_eval_requests("pending", LOCAL_DIR, REQUESTS_REPO)
 
     if not eval_requests:
-        sys.stderr("No pending evaluation requests found.")
+        print("No pending evaluation requests found.", file=sys.stderr)
         return
 
     # sort by "submitted_time"
