@@ -45,7 +45,7 @@ class EvalRequest:
 
 def parse_eval_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output", type=str, default=None)
+    parser.add_argument("--keys_file", type=str, default=None)
     return parser.parse_args()
 
 
@@ -94,8 +94,8 @@ def get_eval_requests(job_status: list, local_dir: str, hf_repo: str) -> list[Ev
 def main():
 
     args = parse_eval_args()
-    if args.output is None:
-        print("No output file specified.", file=sys.stderr)
+    if args.keys_file is None:
+        print("No keys_file file specified.", file=sys.stderr)
         return
 
     eval_requests = get_eval_requests("PENDING", LOCAL_DIR, REQUESTS_REPO)
@@ -116,7 +116,7 @@ def main():
         "model": next_eval_request.model,
         "revision": next_eval_request.revision,
     }
-    with open(args.output, "w") as f:
+    with open(args.keys_file, "w") as f:
         json.dump(next_model, f)
 
 if __name__ == "__main__":
