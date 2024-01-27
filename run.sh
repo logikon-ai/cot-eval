@@ -36,7 +36,7 @@ echo "Created configs: $configkeys"
 arr_configkeys=(${configkeys//,/ })
 for config in "${arr_configkeys[@]}"
 do
-    python cot_eval \
+    cot-eval \
         --config $config \
         --hftoken $HUGGINGFACEHUB_API_TOKEN
 done
