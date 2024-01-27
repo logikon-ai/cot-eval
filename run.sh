@@ -6,6 +6,7 @@ MODELKWARGS="{temperature: .3, top_k: 100, top_p: .95}"  # YAML format
 TASKS="logiqa,logiqa2,lsat-ar,lsat-rc,lsat-lr"
 OUTPUT_DIR="./eleuther/output"
 TRUST_REMOTE_CODE=true
+MAX_LENGTH=4096
 DO_BASEEVAL=true
 modelbase="$(basename -- $MODEL)"
 
@@ -35,7 +36,7 @@ python cot_eval \
     --hftoken $HUGGINGFACEHUB_API_TOKEN
 
 
-# run lm_eval BASE for each of the tasks
+# run lm-eval BASE for each of the tasks
 if [ "$DO_BASEEVAL" = true ] ; then
     arrTASKS=(${TASKS//,/ })
     for task in "${arrTASKS[@]}"
@@ -44,12 +45,12 @@ if [ "$DO_BASEEVAL" = true ] ; then
         if [ -f $output_path ]; then
             echo "Outputfile $FILE exists. Skipping task $task."
         else
-            lm_eval --model vllm \
-                --model_args pretrained=${MODEL},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE \
+            lm-eval --model vllm \
+                --model_args pretrained=${MODEL},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
                 --tasks ${task}_base \
                 --num_fewshot 0 \
                 --batch_size auto \
-                --output_path $OUTPUT_DIR/${modelbase}/${task}_base.json \
+                --output_path $output_path \
                 --include_path ./eleuther/tasks/logikon
         fi
     done
@@ -60,8 +61,8 @@ fi
 arrHARNESS_TASKS=(${HARNESS_TASKS//,/ })
 for task in "${arrHARNESS_TASKS[@]}"
 do
-    lm_eval --model vllm \
-        --model_args pretrained=${MODEL},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE \
+    lm-eval --model vllm \
+        --model_args pretrained=${MODEL},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
         --tasks ${task} \
         --num_fewshot 0 \
         --batch_size auto \

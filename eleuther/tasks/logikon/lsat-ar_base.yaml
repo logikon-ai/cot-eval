@@ -1,4 +1,4 @@
-"task": "lsat_ar_base"
+"task": "lsat-ar_base"
 "dataset_path": "logikon/logikon-bench"
 "dataset_name": "lsat-ar"
 "include": "_logikon_template_yaml"
