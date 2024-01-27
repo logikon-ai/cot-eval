@@ -16,9 +16,9 @@ LOCAL_DIR = "~/cot-leaderboard-requests"
 @dataclass
 class EvalRequest:
     model: str
-    private: bool
     status: str
     json_filepath: str
+    private: bool = False
     weight_type: str = "Original"
     model_type: str = ""  # pretrained, finetuned, with RL
     precision: str = ""  # float16, bfloat16
