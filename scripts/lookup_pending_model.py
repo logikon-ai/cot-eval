@@ -10,7 +10,7 @@ from huggingface_hub import HfApi, snapshot_download
 TOKEN = os.environ.get("HUGGINGFACEHUB_API_TOKEN") # A read/write token for your org
 API = HfApi(token=TOKEN)
 REQUESTS_REPO = "logikon/cot-leaderboard-requests"
-LOCAL_DIR = "~/cot-leaderboard-requests"
+LOCAL_DIR = "./TMP/cot-leaderboard-requests"
 
 
 @dataclass
