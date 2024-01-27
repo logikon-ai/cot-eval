@@ -9,6 +9,8 @@ import argparse
 from huggingface_hub import HfApi, snapshot_download
 
 TOKEN = os.environ.get("HUGGINGFACEHUB_API_TOKEN") # A read/write token for your org
+if TOKEN is None:
+    raise ValueError("No HF token specified")
 API = HfApi(token=TOKEN)
 REQUESTS_REPO = "logikon/cot-leaderboard-requests"
 LOCAL_DIR = "./TMP/cot-leaderboard-requests"
