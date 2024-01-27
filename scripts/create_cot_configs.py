@@ -106,3 +106,5 @@ def main():
 
     logging.info(f"Created {len(created_configs_keys)} configs.")
                 
+if __name__ == "__main__":
+    main()
