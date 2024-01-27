@@ -6,7 +6,7 @@ import logging
 import argparse
 import numpy as np
 
-from datasets import load_dataset, Dataset
+from datasets import load_dataset, load_dataset_builder, Dataset
 from langchain_core.runnables import Runnable
 from langchain_community.llms import VLLM
 
@@ -77,6 +77,16 @@ def run_chain_on_task(task_ds: Dataset, chain: Runnable) -> Dataset:
     task_ds = task_ds.map(add_resaoning, batched=True, batch_size=2048)
     return task_ds
 
+
+def has_config(path: str, config_name: str, token: str) -> bool:
+    """helper to check if a config exists"""
+    try:
+        load_dataset_builder(path, config_name=config_name, token=token)
+        return True
+    except:
+        return False
+
+
 def main():
     args = parse_args()
 
@@ -99,9 +109,17 @@ def main():
     if hftoken is None:
         raise ValueError("No HF token specified")
 
+    tasks = []
+    for task in config.tasks:
+        if not has_config(args.upload_dataset, f"{config.name}-{task}", token=hftoken):
+            tasks.append(task)
+        else:
+            logging.warning(f"Config {config.name}-{task} already exists. Will not generate reasoning traces for this config.")
+
+
     # Preprocess the task data
     task_data = {}
-    for task in config.tasks:
+    for task in tasks:
         task_data[task] = load_and_preprocess(task, token=hftoken)
 
     # Load model
@@ -126,7 +144,7 @@ def main():
 
     # Run COT chain on tasks
     cot_data: dict[str, Dataset] = {}
-    for task in config.tasks:
+    for task in tasks:
         logging.info(f"Running COT chain {config.cot_chain} on {task}")
         cot_data[task] = run_chain_on_task(task_data[task], chain)
         logging.info(f"Created reasoning traces for {task}")
