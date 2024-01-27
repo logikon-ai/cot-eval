@@ -4,6 +4,7 @@ CHAINS="HandsOn,ReflectBeforeRun" # "HandsOn"
 MODELKWARGS='[{temperature: .3, top_k: 100, top_p: .95},{temperature: 0},{use_beam_search: true, best_of: 1, n: 4}]'  # YAML format
 TASKS="logiqa,logiqa2,lsat-ar,lsat-rc,lsat-lr"
 OUTPUT_DIR="./eleuther/output"
+CONFIGS_DIR="src/cot_eval/configs"
 TRUST_REMOTE_CODE=true
 MAX_LENGTH=4096
 DO_BASEEVAL=true
@@ -25,7 +26,7 @@ python scripts/create_cot_configs.py \
     --chains $CHAINS \
     --model_kwargs "$MODELKWARGS" \
     --tasks $TASKS \
-    --output_dir src/cot_eval/configs \
+    --output_dir $CONFIGS_DIR \
     --keys_file ./config_keys.txt
 configkeys=$(cat config_keys.txt)  # format is "config1,config2,config3"
 echo "Created configs: $configkeys"
@@ -37,7 +38,7 @@ arr_configkeys=(${configkeys//,/ })
 for config in "${arr_configkeys[@]}"
 do
     cot-eval \
-        --config $config \
+        --config $CONFIGS_DIR/$config.yaml \
         --hftoken $HUGGINGFACEHUB_API_TOKEN
 done
 
