@@ -1,6 +1,7 @@
 import glob
 import json
 import os
+import sys
 from dataclasses import dataclass
 from typing import Optional
 
@@ -87,7 +88,7 @@ def main():
     eval_requests = get_eval_requests("pending", LOCAL_DIR, REQUESTS_REPO)
 
     if not eval_requests:
-        print("No pending evaluation requests found.")
+        sys.stderr("No pending evaluation requests found.")
         return
 
     # sort by "submitted_time"
@@ -96,4 +97,7 @@ def main():
     next_eval_request = eval_requests[0]
     # set status to running
     set_eval_request(next_eval_request, "running", REQUESTS_REPO, LOCAL_DIR)
-    return f"{next_eval_request.model},{next_eval_request.revision}"
+    print(f"{next_eval_request.model},{next_eval_request.revision}")
+
+if __name__ == "__main__":
+    main()
