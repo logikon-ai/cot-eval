@@ -9,6 +9,10 @@ TRUST_REMOTE_CODE=true
 MAX_LENGTH=4096
 DO_BASEEVAL=true
 
+set -a # automatically export all variables
+source ../.env
+set +a
+
 huggingface-cli login --token $HUGGINGFACEHUB_API_TOKEN
 
 # lookup model to-be evaluated
