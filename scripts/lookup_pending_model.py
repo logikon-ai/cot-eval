@@ -48,6 +48,7 @@ class EvalRequest:
 def parse_eval_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--keys_file", type=str, default=None)
+    parser.add_argument("--max_params", type=int, default=None)
     return parser.parse_args()
 
 
@@ -104,6 +105,17 @@ def main():
 
     if not eval_requests:
         print("No pending evaluation requests found.", file=sys.stderr)
+        return
+
+    # filter by max_params
+    if args.max_params is not None:
+        eval_requests = [
+            eval_request for eval_request in eval_requests
+            if eval_request.params and eval_request.params <= args.max_params
+        ]
+
+    if not eval_requests:
+        print("No pending evaluation requests (meeting MAX_PARAMS condition) found.", file=sys.stderr)
         return
 
     # sort by "submitted_time"

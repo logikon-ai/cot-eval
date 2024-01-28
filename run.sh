@@ -8,6 +8,7 @@ CONFIGS_DIR="src/cot_eval/configs"
 TRUST_REMOTE_CODE=true
 MAX_LENGTH=4096
 DO_BASEEVAL=true
+MAX_MODEL_PARAMS=20 # max number of params (B) of evaluated model
 
 set -a # automatically export all variables
 source ../.env
@@ -24,7 +25,7 @@ fi
 huggingface-cli login --token $HUGGINGFACEHUB_API_TOKEN
 
 # lookup model to-be evaluated
-python scripts/lookup_pending_model.py --keys_file ./next_model.json
+python scripts/lookup_pending_model.py --keys_file ./next_model.json --max_params $MAX_MODEL_PARAMS
 model=$(cat next_model.json | jq -r .model)
 revision=$(cat next_model.json | jq -r .revision)
 precision=$(cat next_model.json | jq -r .precision)
