@@ -70,24 +70,23 @@ echo "Created lm-eval-harness tasks cot: $harness_tasks_cot"
 
 timestamp=$(date +"%y-%m-%d-%T")
 
-# run lm-eval BASE (unperturbed) for each task
+# run lm-eval originial BASE (unperturbed) for each task
 if [ "$DO_BASEEVAL" = true ] ; then
     arrTASKS=(${TASKS//,/ })
-    for task in "${arrTASKS[@]}"
-    do
-        output_path=$OUTPUT_DIR/${model}/orig/results_${timestamp}.json
-        if [ -f $output_path ]; then
-            echo "Outputfile $FILE exists. Skipping task $task."
-        else
-            lm-eval --model vllm \
-                --model_args pretrained=${model},revision=${revision},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
-                --tasks ${task}_base \
-                --num_fewshot 0 \
-                --batch_size auto \
-                --output_path $output_path \
-                --include_path ./eleuther/tasks/logikon
-        fi
-    done
+    basetasks=$(printf "%s_base," "${arrTASKS[@]}")
+    basetasks=${basetasks:0:-1}
+    output_path=$OUTPUT_DIR/${model}/orig/results_${timestamp}.json
+    if [ -f $output_path ]; then
+        echo "Outputfile $FILE exists. Skipping eval of $basetasks."
+    else
+        lm-eval --model vllm \
+            --model_args pretrained=${model},revision=${revision},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
+            --tasks $basetasks \
+            --num_fewshot 0 \
+            --batch_size auto \
+            --output_path $output_path \
+            --include_path ./eleuther/tasks/logikon
+    fi
 fi
 
 
