@@ -213,8 +213,8 @@ def main():
     for json_filepath in result_files:
         path_in_repo = json_filepath.replace(f"{args.output_dir}", "data")
         if not API.file_exists(
-            path_in_repo=path_in_repo,
             repo_id=args.results_dataset,
+            filename=path_in_repo,
             repo_type="datasets",
         ):
             API.upload_file(
