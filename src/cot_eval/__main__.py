@@ -55,9 +55,9 @@ def load_and_preprocess(task: str, token: str) -> Dataset:
         example["question_options"] = f"{question}\n{options_block}"
         return example
 
-    ds = ds.map(permutate_options)
+    ds = ds.map(permutate_options, load_from_cache_file=False)
     logging.info(f"Permutated options for {task} dataset")
-    ds = ds.map(format_mcq)
+    ds = ds.map(format_mcq, load_from_cache_file=False)
     logging.info(f"Formatted MC-Question-Block for {task} dataset")
     return ds
 
@@ -65,7 +65,7 @@ def load_and_preprocess(task: str, token: str) -> Dataset:
 def run_chain_on_task(task_ds: Dataset, chain: Runnable) -> Dataset:
     """Run the COT chain on the task dataset"""
 
-    def add_resaoning(examples):
+    def add_reasoning(examples):
         input_batch = [
             {"passage": passage, "question_options": question_options}
             for passage, question_options
@@ -74,7 +74,7 @@ def run_chain_on_task(task_ds: Dataset, chain: Runnable) -> Dataset:
         reasoning_traces = chain.batch(input_batch)
         return {"reasoning_trace": reasoning_traces}
 
-    task_ds = task_ds.map(add_resaoning, batched=True, batch_size=2048)
+    task_ds = task_ds.map(add_reasoning, batched=True, batch_size=2048, load_from_cache_file=False)
     return task_ds
 
 
