@@ -215,7 +215,7 @@ def main():
         if not API.file_exists(
             repo_id=args.results_dataset,
             filename=path_in_repo,
-            repo_type="datasets",
+            repo_type="dataset",
         ):
             API.upload_file(
                 path_or_fileobj=json_filepath,
