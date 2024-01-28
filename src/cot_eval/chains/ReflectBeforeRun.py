@@ -23,7 +23,7 @@ Read the following passage and question carefully. They define the problem to so
 {question_options}
 </question>
 
-Take a deep breadth -- and think carefully, step by step. Rmember: Sometimes it's useful to take a step back and reflect on the problem. The following more specific instructions may help you to do so:
+Take a deep breath -- and think carefully, step by step. Rmember: Sometimes it's useful to take a step back and reflect on the problem. The following more specific instructions may help you to do so:
 
 * Characterize the decision problem in abstract terms.
 * Identify common mistakes for this kind of problem.

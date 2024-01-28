@@ -23,7 +23,7 @@ Read the following passage and question carefully. They define the problem to so
 {question_options}
 </question>
 
-Take a deep breadth -- and think carefully, step by step.
+Take a deep breath -- and think carefully, step by step.
 
 Use the closing tag </reasoning> to indicate when you're done.
 
