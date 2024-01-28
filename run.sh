@@ -2,7 +2,7 @@
 
 CHAINS="HandsOn,ReflectBeforeRun" # "HandsOn"
 MODELKWARGS='[{temperature: .3, top_k: 100, top_p: .95},{temperature: 0},{use_beam_search: true, best_of: 1, n: 4}]'  # YAML format
-TASKS="logiqa,logiqa2,lsat-ar,lsat-rc,lsat-lr"
+TASKS="logiqa,lsat-lr" # "logiqa,logiqa2,lsat-ar,lsat-rc,lsat-lr"
 OUTPUT_DIR="./eleuther/output"
 CONFIGS_DIR="src/cot_eval/configs"
 TRUST_REMOTE_CODE=true
