@@ -13,6 +13,14 @@ set -a # automatically export all variables
 source ../.env
 set +a
 
+set -e # exit on error
+
+if [[ -z "${HUGGINGFACEHUB_API_TOKEN}" ]]; then
+  echo "HUGGINGFACEHUB_API_TOKEN not found. Please set it in .env file."
+  exit 1
+fi
+
+
 huggingface-cli login --token $HUGGINGFACEHUB_API_TOKEN
 
 # lookup model to-be evaluated
