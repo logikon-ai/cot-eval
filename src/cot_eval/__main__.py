@@ -6,7 +6,7 @@ import logging
 import argparse
 import numpy as np
 
-from datasets import load_dataset, load_dataset_builder, Dataset
+from datasets import load_dataset, load_dataset_builder, disable_caching, Dataset
 from langchain_core.runnables import Runnable
 from langchain_community.llms import VLLM
 
@@ -19,6 +19,8 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
+# Disable caching
+disable_caching()
 
 
 def parse_args() -> argparse.Namespace:
