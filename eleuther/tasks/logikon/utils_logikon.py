@@ -50,6 +50,6 @@ def doc_to_text_cot(doc) -> str:
     for choice, option in zip(choices, doc["options"]):
         prompt += f"{choice.upper()}. {option}\n"
     prompt += "\n"
-    prompt += "Reasoning: " + doc["reasoning"] + "\n\n"    
+    prompt += "Reasoning: " + doc["reasoning_trace"] + "\n\n"    
     prompt += "Answer:"
     return prompt

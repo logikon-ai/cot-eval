@@ -72,7 +72,7 @@ def run_chain_on_task(task_ds: Dataset, chain: Runnable) -> Dataset:
             in zip(examples["passage"], examples["question_options"])
         ]
         reasoning_traces = chain.batch(input_batch)
-        return {"reasoning_traces": reasoning_traces}
+        return {"reasoning_trace": reasoning_traces}
 
     task_ds = task_ds.map(add_resaoning, batched=True, batch_size=2048)
     return task_ds
