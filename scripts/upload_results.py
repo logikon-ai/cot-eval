@@ -243,7 +243,7 @@ def main():
 
     # update eval request status to FINISHED
     eval_requests = get_eval_requests("RUNNING", LOCAL_DIR, REQUESTS_REPO)
-    this_eval_request = next([e for e in eval_requests if e.model == args.model], None)
+    this_eval_request = next((e for e in eval_requests if e.model == args.model), None)
     if this_eval_request is not None:
         # set status to finished
         set_eval_request(this_eval_request, "FINISHED", REQUESTS_REPO, LOCAL_DIR)
