@@ -138,7 +138,7 @@ def get_leaderboard_record(
 
     raw_results = {"base": [], "cot": []}
     for subfolder in raw_results.keys():
-        result_files = glob.glob(f"{LOCAL_DIR2}/{model}/{subfolder}/**/*.json", recursive=True)
+        result_files = glob.glob(f"{LOCAL_DIR2}/data/{model}/{subfolder}/**/*.json", recursive=True)
         for json_filepath in result_files:
             with open(json_filepath) as fp:
                 data = json.load(fp)
@@ -206,9 +206,12 @@ def main():
         raise ValueError("output_dir must be a directory")
 
     tasks = args.tasks.split(",")
+    if len(tasks) == 0:
+        raise ValueError("No tasks specified")
+    logging.info(f"Tasks: {tasks}")
 
 
-    # upload all new results for this model to results repo
+    # upload all new results for this model to raw results repo
     result_files = glob.glob(f"{args.output_dir}/{args.model}/**/*.json", recursive=True)
     for json_filepath in result_files:
         path_in_repo = json_filepath.replace(f"{args.output_dir}", "data")
