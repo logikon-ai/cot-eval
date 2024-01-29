@@ -174,7 +174,7 @@ def get_leaderboard_record(
         current_task = next(t for t in tasks if t in key_cot.split("_"))
 
         deltas[current_task].append((acc_cot - acc_base))
-        rates[current_task].append((acc_cot - acc_base))
+        rates[current_task].append((acc_cot - acc_base)/acc_base)
 
     leaderboard_record = {
         "config": {
@@ -239,6 +239,7 @@ def main():
             repo_id=LEADERBOARD_RESULTS_REPO,
             repo_type="dataset",
         )
+        logging.info(f"Uploaded leaderboard record for model {args.model}: {leaderboard_record}")
 
 
     # update eval request status to FINISHED
