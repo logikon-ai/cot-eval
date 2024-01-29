@@ -62,7 +62,7 @@ def set_eval_request(eval_request: EvalRequest, set_to_status: str, hf_repo: str
     data["status"] = set_to_status
 
     with open(json_filepath, "w") as f:
-        f.write(json.dumps(data))
+        f.write(json.dumps(data, indent=4))
 
     API.upload_file(
         path_or_fileobj=json_filepath,
