@@ -248,6 +248,7 @@ def main():
     if this_eval_request is not None:
         # set status to finished
         set_eval_request(this_eval_request, "FINISHED", REQUESTS_REPO, LOCAL_DIR)
+        logging.info(f"Updated status of eval request for model {args.model} to FINISHED.")
     else:
         logging.warning(f"No running evaluation requests found for model {args.model}.")
 
