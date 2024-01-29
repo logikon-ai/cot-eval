@@ -183,7 +183,7 @@ def get_leaderboard_record(
             "model_name": model,
         },
         "results": {
-            task: {"delta_abs": max(deltas[task]), "delta_rel":  max(rates[task])}
+            task: {"delta_abs": max(deltas[task])}
             for task in tasks
         },
     }
