@@ -1,18 +1,10 @@
 #!bin/bash
 
-CHAINS="HandsOn,ReflectBeforeRun" # "HandsOn"
-MODELKWARGS='[{temperature: .3, top_k: 100, top_p: .95},{temperature: 0},{temperature: 0, use_beam_search: true, best_of: 2, n: 1}]'  # YAML format
-TASKS="logiqa,logiqa2,lsat-ar,lsat-rc,lsat-lr"
-OUTPUT_DIR="./eleuther/output"
-CONFIGS_DIR="src/cot_eval/configs"
-TRUST_REMOTE_CODE=true
-MAX_LENGTH=4096
-DO_BASEEVAL=true
-MAX_MODEL_PARAMS=10 # max number of params (B) of evaluated model
-
 set -a # automatically export all variables
+source config.env
 source ../.env
 set +a
+
 
 set -e # exit on error
 
