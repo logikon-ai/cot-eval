@@ -1,5 +1,9 @@
 # COT-eval
 
+A framework for evaluating the effectiveness of chain-of-thought reasoning in language models.
+
+🔥 [**`/\/` Open CoT Leaderboard**](https://huggingface.co/spaces/logikon/open_cot_leaderboard)
+
 -----
 
 **Table of Contents**
