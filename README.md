@@ -1,8 +1,5 @@
 # COT-eval
 
-[![PyPI - Version](https://img.shields.io/pypi/v/cot-eval.svg)](https://pypi.org/project/cot-eval)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cot-eval.svg)](https://pypi.org/project/cot-eval)
-
 -----
 
 **Table of Contents**
@@ -11,6 +8,7 @@
 - [Pipeline](#pipeline)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Built with](#built-with)
 - [License](#license)
 
 
@@ -43,14 +41,25 @@ The pipeline is as follows:
 ## Installation
 
 ```console
-pip install cot-eval
+git clone https://github.com/logikon-ai/cot-eval.git
+cd cot-eval
+pip install -e ".[cuda]"
 ```
 
 ## Usage
 
+See `run.sh` for an implementation of the pipeline.
+
 ```console
 cot-eval --help
 ```
+
+## 🙏 Built with
+
+- [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness)
+- [vLLM](https://github.com/vllm-project/vllm)
+- [LangChain](https://github.com/langchain-ai/langchain)
+
 
 ## License
 
