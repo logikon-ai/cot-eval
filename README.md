@@ -63,6 +63,7 @@ cot-eval --help
 - [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness)
 - [vLLM](https://github.com/vllm-project/vllm)
 - [LangChain](https://github.com/langchain-ai/langchain)
+- [HF Demo Leaderboard](https://huggingface.co/spaces/demo-leaderboard/leaderboard)
 
 
 ## License
