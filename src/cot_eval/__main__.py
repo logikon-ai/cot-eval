@@ -83,7 +83,7 @@ def run_chain_on_task(task_ds: Dataset, chain: Runnable) -> Dataset:
 def has_config(path: str, config_name: str, token: str) -> bool:
     """helper to check if a config exists"""
     try:
-        load_dataset_builder(path, config_name=config_name, token=token)
+        load_dataset_builder(path, name=config_name, token=token)
         return True
     except:
         return False
