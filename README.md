@@ -1,6 +1,6 @@
 <div align="center">
 
-# COT-eval
+# CoT-eval
 
 A framework for evaluating the effectiveness of chain-of-thought reasoning in language models.
 
