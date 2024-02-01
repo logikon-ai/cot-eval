@@ -28,6 +28,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config", default=None, help="Name of config to use")
     parser.add_argument("--upload_dataset", default="logikon/cot-eval-traces", help="Dataset path to upload to")
     parser.add_argument("--create_pr", type=bool, default=False, help="Whether to create pull requests when uploading")
+    parser.add_argument("--num_gpus", type=int, default=1, help="Number of gpus to use")
     parser.add_argument("--hftoken", default=None, help="HF Token to use for upload")
     return parser.parse_args()
 
@@ -130,6 +131,7 @@ def main():
     llm = VLLM(
         model=config.model,
         **config.modelkwargs,
+        tensor_parallel_size=args.num_gpus,
     )
 
     # Build COT chain

@@ -45,6 +45,7 @@ do
     cot-eval \
         --config $CONFIGS_DIR/$config.yaml \
         --hftoken $HUGGINGFACEHUB_API_TOKEN \
+        --num_gpus $NUM_GPUS \
         --create_pr $CREATE_PULLREQUESTS
 done
 
@@ -74,7 +75,7 @@ if [ "$DO_BASEEVAL" = true ] ; then
         echo "Outputfile $FILE exists. Skipping eval of $basetasks."
     else
         lm-eval --model vllm \
-            --model_args pretrained=${model},revision=${revision},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
+            --model_args pretrained=${model},revision=${revision},dtype=auto,tensor_parallel_size=${NUM_GPUS},gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
             --tasks $basetasks \
             --num_fewshot 0 \
             --batch_size auto \
@@ -87,7 +88,7 @@ fi
 ## run lm evaluation harness for each of the tasks
 # without reasoning traces
 lm-eval --model vllm \
-    --model_args pretrained=${model},revision=${revision},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
+    --model_args pretrained=${model},revision=${revision},dtype=auto,tensor_parallel_size=${NUM_GPUS},gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
     --tasks ${harness_tasks_base} \
     --num_fewshot 0 \
     --batch_size auto \
@@ -95,7 +96,7 @@ lm-eval --model vllm \
     --include_path ./eleuther/tasks/logikon
 # with reasoning traces
 lm-eval --model vllm \
-    --model_args pretrained=${model},revision=${revision},dtype=auto,gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
+    --model_args pretrained=${model},revision=${revision},dtype=auto,tensor_parallel_size=${NUM_GPUS},gpu_memory_utilization=0.9,trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
     --tasks ${harness_tasks_cot} \
     --num_fewshot 0 \
     --batch_size auto \
