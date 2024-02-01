@@ -122,4 +122,4 @@ rm ./next_model.json
 rm ./config_keys.txt
 rm ./lm_eval_harness_tasks.json
 
-rm -r /root/.cache/huggingface/hub
+rm -r ~/.cache/huggingface/hub
