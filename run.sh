@@ -17,7 +17,7 @@ fi
 huggingface-cli login --token $HUGGINGFACEHUB_API_TOKEN
 
 # lookup model to-be evaluated
-python scripts/lookup_pending_model.py --keys_file ./next_model.json --max_params $MAX_MODEL_PARAMS --create_pr false
+python scripts/lookup_pending_model.py --keys_file ./next_model.json --max_params $MAX_MODEL_PARAMS
 model=$(cat next_model.json | jq -r .model)
 revision=$(cat next_model.json | jq -r .revision)
 precision=$(cat next_model.json | jq -r .precision)
@@ -45,8 +45,7 @@ do
     cot-eval \
         --config $CONFIGS_DIR/$config.yaml \
         --hftoken $HUGGINGFACEHUB_API_TOKEN \
-        --num_gpus $NUM_GPUS \
-        --create_pr false
+        --num_gpus $NUM_GPUS
 done
 
 
