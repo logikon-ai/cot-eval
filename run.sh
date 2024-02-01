@@ -120,5 +120,3 @@ python scripts/upload_results.py \
 rm ./next_model.json
 rm ./config_keys.txt
 rm ./lm_eval_harness_tasks.json
-
-rm -r ~/.cache/huggingface/hub
