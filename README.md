@@ -4,10 +4,12 @@
 
 A framework for evaluating the effectiveness of chain-of-thought reasoning in language models.
 
-🔥 [**`/\/` Open CoT Leaderboard** [coming soon]](https://huggingface.co/spaces/logikon/open_cot_leaderboard) |
+🔥 **`/\/` Open CoT Leaderboard** [coming soon] |
 🔥 [**Results Exploration (Notebook)**](notebooks/CoT_Leaderboard_Results_Exploration.ipynb)
 
 </div>
+
+<!-- [**`/\/` Open CoT Leaderboard** [coming soon]](https://huggingface.co/spaces/logikon/open_cot_leaderboard) -->
 
 -----
 
