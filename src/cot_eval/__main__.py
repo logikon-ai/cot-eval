@@ -26,7 +26,8 @@ disable_caching()
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--config", default=None, help="Name of config to use")
-    parser.add_argument("--upload-dataset", default="logikon/cot-eval-traces", help="Dataset path to upload to")
+    parser.add_argument("--upload_dataset", default="logikon/cot-eval-traces", help="Dataset path to upload to")
+    parser.add_argument("--create_pr", type=bool, default=False, help="Whether to create pull requests when uploading")
     parser.add_argument("--hftoken", default=None, help="HF Token to use for upload")
     return parser.parse_args()
 
@@ -160,6 +161,7 @@ def main():
             split="test",
             commit_message=f"Add reasoning dataset for config {config.name} and task {task}",
             commit_description=config.to_yaml(),
+            create_pr=args.create_pr,
             token=hftoken,
             private=True,
         )

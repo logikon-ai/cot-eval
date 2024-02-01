@@ -15,7 +15,6 @@ from typing import Optional
 import glob
 import json
 import os
-import sys
 from dataclasses import dataclass
 import tempfile
 
@@ -73,10 +72,11 @@ def parse_eval_args() -> argparse.Namespace:
     parser.add_argument("--timestamp", type=str, default=None)
     parser.add_argument("--output_dir", type=str, default=None)
     parser.add_argument("--results_dataset", type=str, default=RESULTS_REPO)
+    parser.add_argument("--create_pr", type=bool, default=False, help="Whether to create pull requests when uploading")
     return parser.parse_args()
 
 
-def set_eval_request(eval_request: EvalRequest, set_to_status: str, hf_repo: str, local_dir: str):
+def set_eval_request(eval_request: EvalRequest, set_to_status: str, hf_repo: str, local_dir: str, create_pr: bool = False):
     """Updates a given eval request with its new status on the hub (running, completed, failed, ...)"""
     json_filepath = eval_request.json_filepath
 
@@ -92,6 +92,8 @@ def set_eval_request(eval_request: EvalRequest, set_to_status: str, hf_repo: str
         path_or_fileobj=json_filepath,
         path_in_repo=json_filepath.replace(local_dir, ""),
         repo_id=hf_repo,
+        commit_message=f"Update status to {set_to_status}",
+        create_pr=create_pr,
         repo_type="dataset",
     )
 
@@ -224,6 +226,8 @@ def main():
                 path_or_fileobj=json_filepath,
                 path_in_repo=path_in_repo,
                 repo_id=args.results_dataset,
+                commit_message=f"Upload results for model {args.model}",
+                create_pr=args.create_pr,
                 repo_type="dataset",
             )
 
@@ -237,6 +241,8 @@ def main():
             path_or_fileobj=fp.name,
             path_in_repo=f"{args.model}/results_leaderboard.json",
             repo_id=LEADERBOARD_RESULTS_REPO,
+            commit_message=f"Update leaderboard for model {args.model}",
+            create_pr=args.create_pr,
             repo_type="dataset",
         )
         logging.info(f"Uploaded leaderboard record for model {args.model}: {leaderboard_record}")
@@ -247,7 +253,7 @@ def main():
     this_eval_request = next((e for e in eval_requests if e.model == args.model), None)
     if this_eval_request is not None:
         # set status to finished
-        set_eval_request(this_eval_request, "FINISHED", REQUESTS_REPO, LOCAL_DIR)
+        set_eval_request(this_eval_request, "FINISHED", REQUESTS_REPO, LOCAL_DIR, args.create_pr)
         logging.info(f"Updated status of eval request for model {args.model} to FINISHED.")
     else:
         logging.warning(f"No running evaluation requests found for model {args.model}.")

@@ -49,10 +49,11 @@ def parse_eval_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--keys_file", type=str, default=None)
     parser.add_argument("--max_params", type=int, default=None)
+    parser.add_argument("--create_pr", type=bool, default=False, help="Whether to create pull requests when uploading")
     return parser.parse_args()
 
 
-def set_eval_request(eval_request: EvalRequest, set_to_status: str, hf_repo: str, local_dir: str):
+def set_eval_request(eval_request: EvalRequest, set_to_status: str, hf_repo: str, local_dir: str, create_pr: bool = False):
     """Updates a given eval request with its new status on the hub (running, completed, failed, ...)"""
     json_filepath = eval_request.json_filepath
 
@@ -68,6 +69,8 @@ def set_eval_request(eval_request: EvalRequest, set_to_status: str, hf_repo: str
         path_or_fileobj=json_filepath,
         path_in_repo=json_filepath.replace(local_dir, ""),
         repo_id=hf_repo,
+        commit_message=f"Update status to {set_to_status}",
+        create_pr=create_pr,
         repo_type="dataset",
     )
 
@@ -123,7 +126,7 @@ def main():
 
     next_eval_request = eval_requests[0]
     # set status to running
-    set_eval_request(next_eval_request, "RUNNING", REQUESTS_REPO, LOCAL_DIR)
+    set_eval_request(next_eval_request, "RUNNING", REQUESTS_REPO, LOCAL_DIR, args.create_pr)
 
     # write model args to output file
     next_model = {
