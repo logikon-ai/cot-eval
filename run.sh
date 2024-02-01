@@ -17,7 +17,7 @@ fi
 huggingface-cli login --token $HUGGINGFACEHUB_API_TOKEN
 
 # lookup model to-be evaluated
-python scripts/lookup_pending_model.py --keys_file ./next_model.json --max_params $MAX_MODEL_PARAMS
+python scripts/lookup_pending_model.py --keys_file ./next_model.json --max_params $MAX_MODEL_PARAMS --create_pr $CREATE_PULLREQUESTS
 model=$(cat next_model.json | jq -r .model)
 revision=$(cat next_model.json | jq -r .revision)
 precision=$(cat next_model.json | jq -r .precision)
@@ -44,7 +44,8 @@ for config in "${arr_configkeys[@]}"
 do
     cot-eval \
         --config $CONFIGS_DIR/$config.yaml \
-        --hftoken $HUGGINGFACEHUB_API_TOKEN
+        --hftoken $HUGGINGFACEHUB_API_TOKEN \
+        --create_pr $CREATE_PULLREQUESTS
 done
 
 
@@ -109,7 +110,9 @@ python scripts/upload_results.py \
     --precision $precision \
     --tasks $TASKS \
     --timestamp $timestamp \
-    --output_dir $OUTPUT_DIR
+    --output_dir $OUTPUT_DIR \
+    --create_pr $CREATE_PULLREQUESTS
+
 #    --harness_tasks_base $harness_tasks_base \
 #    --harness_tasks_cot $harness_tasks_cot
 
