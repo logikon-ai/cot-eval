@@ -46,7 +46,7 @@ do
         --config $CONFIGS_DIR/$config.yaml \
         --hftoken $HUGGINGFACEHUB_API_TOKEN \
         --num_gpus $NUM_GPUS \
-        --create_pr $CREATE_PULLREQUESTS
+        --create_pr False
 done
 
 
