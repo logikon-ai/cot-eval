@@ -15,6 +15,7 @@ from typing import Optional
 import glob
 import json
 import os
+import shutil
 from dataclasses import dataclass
 import tempfile
 
@@ -125,22 +126,13 @@ def get_leaderboard_record(
         revision: str,
         tasks: list,
         precision: str,
-        results_dataset: str
+        local_dir_results_dataset: str
     ) -> dict:
     """aggregate raw results"""
 
-    snapshot_download(
-        repo_id=results_dataset,
-        revision="main",
-        local_dir=LOCAL_DIR2,
-        repo_type="dataset",
-        max_workers=60,
-        token=TOKEN
-    )
-
     raw_results = {"base": [], "cot": []}
     for subfolder in raw_results.keys():
-        result_files = glob.glob(f"{LOCAL_DIR2}/data/{model}/{subfolder}/**/*.json", recursive=True)
+        result_files = glob.glob(f"{local_dir_results_dataset}/data/{model}/{subfolder}/**/*.json", recursive=True)
         for json_filepath in result_files:
             with open(json_filepath) as fp:
                 data = json.load(fp)
@@ -212,8 +204,16 @@ def main():
         raise ValueError("No tasks specified")
     logging.info(f"Tasks: {tasks}")
 
+    snapshot_download(
+        repo_id=args.results_dataset,
+        revision="main",
+        local_dir=LOCAL_DIR2,
+        repo_type="dataset",
+        max_workers=60,
+        token=TOKEN
+    )
 
-    # upload all new results for this model to raw results repo
+    # copy/upload all new results for this model to raw results repo
     result_files = glob.glob(f"{args.output_dir}/{args.model}/**/*.json", recursive=True)
     for json_filepath in result_files:
         path_in_repo = json_filepath.replace(f"{args.output_dir}", "data")
@@ -222,6 +222,9 @@ def main():
             filename=path_in_repo,
             repo_type="dataset",
         ):
+            # copy file to local dir
+            shutil.copy(json_filepath, f"{LOCAL_DIR2}/{path_in_repo}")
+            # upload file to hub
             API.upload_file(
                 path_or_fileobj=json_filepath,
                 path_in_repo=path_in_repo,
@@ -233,7 +236,7 @@ def main():
 
 
     # update leaderboard
-    leaderboard_record = get_leaderboard_record(args.model, args.revision, tasks, args.precision, args.results_dataset)
+    leaderboard_record = get_leaderboard_record(args.model, args.revision, tasks, args.precision, LOCAL_DIR2)
     with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as fp:
         json.dump(leaderboard_record, fp, indent=4)
         fp.flush()
