@@ -223,7 +223,9 @@ def main():
             repo_type="dataset",
         ):
             # copy file to local dir
-            shutil.copy(json_filepath, f"{LOCAL_DIR2}/{path_in_repo}")
+            dest_fpath=f"{LOCAL_DIR2}/{path_in_repo}"
+            os.makedirs(os.path.dirname(dest_fpath), exist_ok=True)
+            shutil.copy(json_filepath, dest_fpath)
             # upload file to hub
             API.upload_file(
                 path_or_fileobj=json_filepath,
