@@ -47,6 +47,7 @@ class EvalRequest:
 
 def parse_eval_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--model_id", type=str, default=None)
     parser.add_argument("--keys_file", type=str, default=None)
     parser.add_argument("--max_params", type=int, default=None)
     parser.add_argument("--create_pr", type=bool, default=False, help="Whether to create pull requests when uploading")
@@ -101,30 +102,32 @@ def main():
 
     args = parse_eval_args()
     if args.keys_file is None:
-        print("No keys_file file specified.", file=sys.stderr)
-        return
+        raise ValueError("No keys_file file specified.")
 
     eval_requests = get_eval_requests("PENDING", LOCAL_DIR, REQUESTS_REPO)
 
     if not eval_requests:
-        print("No pending evaluation requests found.", file=sys.stderr)
-        return
+        raise ValueError("No pending evaluation requests found.")
 
-    # filter by max_params
-    if args.max_params is not None:
-        eval_requests = [
-            eval_request for eval_request in eval_requests
-            if eval_request.params and eval_request.params <= args.max_params
-        ]
+    if args.model_id:
+        next_eval_request = next(iter([eval_request for eval_request in eval_requests if eval_request.model == args.model_id]), None)
+        if next_eval_request is None:
+            raise ValueError(f"Model {args.model_id} not found in pending requests.")
+    else:
+        # filter by max_params
+        if args.max_params is not None:
+            eval_requests = [
+                eval_request for eval_request in eval_requests
+                if eval_request.params and eval_request.params <= args.max_params
+            ]
 
-    if not eval_requests:
-        print("No pending evaluation requests (meeting MAX_PARAMS condition) found.", file=sys.stderr)
-        return
+        if not eval_requests:
+            raise ValueError("No pending evaluation requests (meeting MAX_PARAMS condition) found.")
 
-    # sort by "submitted_time"
-    eval_requests = sorted(eval_requests, key=lambda x: x.submitted_time)
+        # sort by "submitted_time" and get next
+        eval_requests = sorted(eval_requests, key=lambda x: x.submitted_time)
+        next_eval_request = eval_requests[0]
 
-    next_eval_request = eval_requests[0]
     # set status to running
     set_eval_request(next_eval_request, "RUNNING", REQUESTS_REPO, LOCAL_DIR, args.create_pr)
 

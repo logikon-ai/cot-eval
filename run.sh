@@ -13,16 +13,22 @@ if [[ -z "${HUGGINGFACEHUB_API_TOKEN}" ]]; then
   exit 1
 fi
 
+if [[ -z "${NEXT_MODEL_ID}" ]]; then
+  lookup_model_id=""
+else
+  lookup_model_id="--model_id ${NEXT_MODEL_ID}"
+fi
+
 if [[ -z "${GPU_MEMORY_UTILIZATION}" ]]; then
   gpu_memory_utilization=0.9
-elif
+else
   gpu_memory_utilization=$GPU_MEMORY_UTILIZATION
 fi
 
 huggingface-cli login --token $HUGGINGFACEHUB_API_TOKEN
 
 # lookup model to-be evaluated
-python scripts/lookup_pending_model.py --keys_file ./next_model.json --max_params $MAX_MODEL_PARAMS
+python scripts/lookup_pending_model.py --keys_file ./next_model.json --max_params $MAX_MODEL_PARAMS $lookup_model_id
 model=$(cat next_model.json | jq -r .model)
 revision=$(cat next_model.json | jq -r .revision)
 precision=$(cat next_model.json | jq -r .precision)
