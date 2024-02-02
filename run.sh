@@ -25,6 +25,14 @@ else
   gpu_memory_utilization=$GPU_MEMORY_UTILIZATION
 fi
 
+if [[ -z "${VLLM_SWAP_SPACE}" ]]; then
+  swap_space=4
+else
+  swap_space=$VLLM_SWAP_SPACE
+fi
+
+
+
 huggingface-cli login --token $HUGGINGFACEHUB_API_TOKEN
 
 # lookup model to-be evaluated
@@ -56,7 +64,8 @@ do
     cot-eval \
         --config $CONFIGS_DIR/$config.yaml \
         --hftoken $HUGGINGFACEHUB_API_TOKEN \
-        --num_gpus $NUM_GPUS
+        --num_gpus $NUM_GPUS \
+        --swap_space $swap_space
 done
 
 
