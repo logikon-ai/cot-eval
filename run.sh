@@ -5,18 +5,11 @@ source config.env
 source ../.env
 set +a
 
-
 set -e # exit on error
 
 if [[ -z "${HUGGINGFACEHUB_API_TOKEN}" ]]; then
   echo "HUGGINGFACEHUB_API_TOKEN not found. Please set it in .env file."
   exit 1
-fi
-
-if [[ -z "${NEXT_MODEL_ID}" ]]; then
-  lookup_model_id=""
-else
-  lookup_model_id="--model_id ${NEXT_MODEL_ID}"
 fi
 
 if [[ -z "${GPU_MEMORY_UTILIZATION}" ]]; then
@@ -32,17 +25,27 @@ else
 fi
 
 
-
 huggingface-cli login --token $HUGGINGFACEHUB_API_TOKEN
 
+
+##############################
 # lookup model to-be evaluated
-python scripts/lookup_pending_model.py --keys_file ./next_model.json --max_params $MAX_MODEL_PARAMS $lookup_model_id
-model=$(cat next_model.json | jq -r .model)
-revision=$(cat next_model.json | jq -r .revision)
-precision=$(cat next_model.json | jq -r .precision)
+
+if [[ -z "${NEXT_MODEL_PATH}" ]]; then
+  python scripts/lookup_pending_model.py --keys_file ./next_model.json --max_params $MAX_MODEL_PARAMS
+  model=$(cat next_model.json | jq -r .model)
+  revision=$(cat next_model.json | jq -r .revision)
+  precision=$(cat next_model.json | jq -r .precision)
+else
+  model="${NEXT_MODEL_PATH}"
+  revision="${NEXT_MODEL_REVISION}"
+  precision="${NEXT_MODEL_PRECISION}"
+fi
 echo "Model to evaluate: $model : $revision. Precision: $precision"
 
-# create configs
+
+##############################
+# create CoT configs
 # a 'config' defines how reasoning traces are generated for a given task
 python scripts/create_cot_configs.py \
     --model $model \
@@ -56,6 +59,8 @@ configkeys=$(cat config_keys.txt)  # format is "config1,config2,config3"
 echo "Created configs: $configkeys"
 
 
+##############################
+# generate reasoning traces
 # run cot_eval to create reasoning traces for every config (model and task)
 # reasoning traces are uploaded to huggingface hub
 arr_configkeys=(${configkeys//,/ })
@@ -69,6 +74,7 @@ do
 done
 
 
+##############################
 # create lm-eval-harness tasks
 # a 'harness task' defines how to evaluate a given model on a given task,
 # specifically whether to include the model's reasoning traces or not
@@ -84,6 +90,8 @@ echo "Created lm-eval-harness tasks cot: $harness_tasks_cot"
 
 timestamp=$(date +"%y-%m-%d-%T")
 
+##############################
+# ORIG evaluation
 # run lm-eval originial BASE (unperturbed) for each task
 if [ "$DO_BASEEVAL" = true ] ; then
     arrTASKS=(${TASKS//,/ })
@@ -104,7 +112,9 @@ if [ "$DO_BASEEVAL" = true ] ; then
 fi
 
 
-## run lm evaluation harness for each of the tasks
+##############################
+# BASE and COT evaluation
+# run lm evaluation harness for each of the tasks
 # without reasoning traces
 lm-eval --model vllm \
     --model_args pretrained=${model},revision=${revision},dtype=auto,tensor_parallel_size=${NUM_GPUS},gpu_memory_utilization=${gpu_memory_utilization},trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
@@ -123,6 +133,7 @@ lm-eval --model vllm \
     --include_path ./eleuther/tasks/logikon
 
 
+##############################
 # collect and upload results
 python scripts/upload_results.py \
     --model $model \
@@ -133,10 +144,3 @@ python scripts/upload_results.py \
     --output_dir $OUTPUT_DIR \
     --create_pr $CREATE_PULLREQUESTS
 
-#    --harness_tasks_base $harness_tasks_base \
-#    --harness_tasks_cot $harness_tasks_cot
-
-# cleanup
-rm ./next_model.json
-rm ./config_keys.txt
-rm ./lm_eval_harness_tasks.json
