@@ -4,16 +4,17 @@ LABEL maintainer "Gregor Betz and the Logikon AI Team"
 
 ARG VLLM_VERSION=0.2.7
 
-# Copy local config file to the container image.
-
 ENV APP_HOME . 
 WORKDIR $APP_HOME
-COPY .config.env ./config.env
 
 # Clone repos
 
 RUN git clone https://github.com/logikon-ai/cot-eval.git
 RUN git clone https://github.com/EleutherAI/lm-evaluation-harness.git
+
+# Copy local config file to the container image.
+
+COPY .config.env ./cot-eval/config.env
 
 # Install python packages
 
