@@ -80,7 +80,7 @@ done
 # specifically whether to include the model's reasoning traces or not
 python scripts/create_lm_eval_harness_tasks.py \
     --configs $configkeys \
-    --output_dir eleuther/tasks/logikon \
+    --output_dir ./eleuther/tasks/logikon \
     --keys_file ./lm_eval_harness_tasks.json
 harness_tasks_base=$(cat lm_eval_harness_tasks.json | jq -r .base) # format is "task1,task2,task3"
 harness_tasks_cot=$(cat lm_eval_harness_tasks.json | jq -r .cot) # format is "task1,task2,task3"
