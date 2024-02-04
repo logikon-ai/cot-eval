@@ -3,7 +3,6 @@
 set -a # automatically export all variables
 source config.env
 #source ../.env
-source secrets.env
 set +a
 
 set -e # exit on error
