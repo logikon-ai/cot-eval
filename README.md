@@ -65,7 +65,8 @@ cd cot-eval
 cat config.env
 ... # modify config.env
 docker build -t cot-eval --build-arg="VLLM_VERSION=0.2.7" .
-docker run --it --rm -e HUGGINGFACEHUB_API_TOKEN cot-eval
+export HUGGINGFACEHUB_API_TOKEN=...
+docker run -it --rm --gpus all -e HUGGINGFACEHUB_API_TOKEN cot-eval
 ```
 
 
