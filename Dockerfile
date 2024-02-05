@@ -9,7 +9,7 @@ WORKDIR $APP_HOME
 
 # Clone repos
 
-RUN git clone https://github.com/logikon-ai/cot-eval.git
+RUN git clone  -b dev https://github.com/logikon-ai/cot-eval.git
 RUN git clone https://github.com/EleutherAI/lm-evaluation-harness.git
 
 # Copy local config file to the container image.
