@@ -57,6 +57,19 @@ cd cot-eval
 pip install -e ".[cuda]"
 ```
 
+With docker:
+
+```bash
+git clone -b dev https://github.com/logikon-ai/cot-eval.git
+cd cot-eval
+cat config.env
+... # modify config.env
+docker build -t cot-eval --build-arg="VLLM_VERSION=0.2.7" .
+export HUGGINGFACEHUB_API_TOKEN=...
+docker run -it --rm --gpus all -e HUGGINGFACEHUB_API_TOKEN cot-eval
+```
+
+
 ## Usage
 
 See `run.sh` for an implementation of the pipeline.

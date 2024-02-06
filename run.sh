@@ -2,7 +2,7 @@
 
 set -a # automatically export all variables
 source config.env
-source ../.env
+#source ../.env
 set +a
 
 set -e # exit on error
