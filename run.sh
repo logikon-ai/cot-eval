@@ -156,11 +156,3 @@ python scripts/upload_results.py \
     --output_dir $LOTMP_ELEU_OUTPUTDIR \
     --create_pr $CREATE_PULLREQUESTS
 
-
-##############################
-# shutdown (optional)
-if [ "$TRIGGER_SHUTDOWN" = true ] ; then
-    echo 'Triggering shutdown...'
-    sleep 10
-    sudo shutdown now
-fi
