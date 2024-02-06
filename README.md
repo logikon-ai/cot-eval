@@ -60,7 +60,7 @@ pip install -e ".[cuda]"
 With docker:
 
 ```bash
-git clone -b dev https://github.com/logikon-ai/cot-eval.git
+git clone https://github.com/logikon-ai/cot-eval.git
 cd cot-eval
 cat config.env
 ... # modify config.env
