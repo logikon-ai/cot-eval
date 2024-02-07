@@ -62,6 +62,7 @@ if [[ -z "${MAX_LENGTH}" ]]; then
 else
   lm_eval_model_args="${lm_eval_model_args},max_length=$MAX_LENGTH"
 fi
+echo "lm-eval model_args: $lm_eval_model_args"
 
 
 ##############################
