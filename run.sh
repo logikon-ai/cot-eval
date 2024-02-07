@@ -55,6 +55,14 @@ else
 fi
 echo "Model to evaluate: $model : $revision. Precision: $precision"
 
+# set lm-eval-harness model_args
+lm_eval_model_args="pretrained=${model},revision=${revision},dtype=auto,tensor_parallel_size=${NUM_GPUS},gpu_memory_utilization=${gpu_memory_utilization},trust_remote_code=$TRUST_REMOTE_CODE"
+if [[ -z "${MAX_LENGTH}" ]]; then
+  echo "No MAX_LENGTH specified in config."
+else
+  lm_eval_model_args="${lm_eval_model_args},max_length=$MAX_LENGTH"
+fi
+
 
 ##############################
 # create CoT configs
@@ -114,7 +122,7 @@ if [ "$DO_BASEEVAL" = true ] ; then
         echo "Outputfile $FILE exists. Skipping eval of $basetasks."
     else
         lm-eval --model vllm \
-            --model_args pretrained=${model},revision=${revision},dtype=auto,tensor_parallel_size=${NUM_GPUS},gpu_memory_utilization=${gpu_memory_utilization},trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
+            --model_args $lm_eval_model_args \
             --tasks $basetasks \
             --num_fewshot 0 \
             --batch_size auto \
@@ -129,7 +137,7 @@ fi
 # run lm evaluation harness for each of the tasks
 # without reasoning traces
 lm-eval --model vllm \
-    --model_args pretrained=${model},revision=${revision},dtype=auto,tensor_parallel_size=${NUM_GPUS},gpu_memory_utilization=${gpu_memory_utilization},trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
+    --model_args $lm_eval_model_args \
     --tasks ${harness_tasks_base} \
     --num_fewshot 0 \
     --batch_size auto \
@@ -137,7 +145,7 @@ lm-eval --model vllm \
     --include_path $LOTMP_ELEU_CONFIGSFOLDER
 # with reasoning traces
 lm-eval --model vllm \
-    --model_args pretrained=${model},revision=${revision},dtype=auto,tensor_parallel_size=${NUM_GPUS},gpu_memory_utilization=${gpu_memory_utilization},trust_remote_code=$TRUST_REMOTE_CODE,max_length=$MAX_LENGTH \
+    --model_args $lm_eval_model_args \
     --tasks ${harness_tasks_cot} \
     --num_fewshot 0 \
     --batch_size auto \
