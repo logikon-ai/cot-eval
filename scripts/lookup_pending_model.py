@@ -12,7 +12,6 @@ TOKEN = os.environ.get("HUGGINGFACEHUB_API_TOKEN") # A read/write token for your
 if TOKEN is None:
     raise ValueError("No HF token specified")
 API = HfApi(token=TOKEN)
-REQUESTS_REPO = "logikon/cot-leaderboard-requests"
 LOCAL_DIR = "./TMP/cot-leaderboard-requests"
 
 
@@ -50,6 +49,7 @@ def parse_eval_args() -> argparse.Namespace:
     parser.add_argument("--model_id", type=str, default=None)
     parser.add_argument("--keys_file", type=str, default=None)
     parser.add_argument("--max_params", type=int, default=None)
+    parser.add_argument("--requests_repo", type=str, default="cot-leaderboard/cot-leaderboard-requests")
     parser.add_argument("--create_pr", type=bool, default=False, help="Whether to create pull requests when uploading")
     return parser.parse_args()
 
@@ -104,7 +104,7 @@ def main():
     if args.keys_file is None:
         raise ValueError("No keys_file file specified.")
 
-    eval_requests = get_eval_requests("PENDING", LOCAL_DIR, REQUESTS_REPO)
+    eval_requests = get_eval_requests("PENDING", LOCAL_DIR, args.requests_repo)
 
     if not eval_requests:
         raise ValueError("No pending evaluation requests found.")
@@ -129,7 +129,7 @@ def main():
         next_eval_request = eval_requests[0]
 
     # set status to running
-    set_eval_request(next_eval_request, "RUNNING", REQUESTS_REPO, LOCAL_DIR, args.create_pr)
+    set_eval_request(next_eval_request, "RUNNING",  args.requests_repo, LOCAL_DIR, args.create_pr)
 
     # write model args to output file
     next_model = {

@@ -28,9 +28,9 @@ logging.basicConfig(level=logging.INFO)
 
 TOKEN = os.environ.get("HUGGINGFACEHUB_API_TOKEN") # A read/write token for your org
 API = HfApi(token=TOKEN)
-REQUESTS_REPO = "logikon/cot-leaderboard-requests"
-LEADERBOARD_RESULTS_REPO = "logikon/cot-leaderboard-results"
-RESULTS_REPO = "logikon/cot-eval-results"
+REQUESTS_REPO = "cot-leaderboard/cot-leaderboard-requests"
+LEADERBOARD_RESULTS_REPO = "cot-leaderboard/cot-leaderboard-results"
+RESULTS_REPO = "cot-leaderboard/cot-eval-results"
 LOCAL_DIR = "./TMP/cot-leaderboard-requests"
 LOCAL_DIR2 = "./TMP/cot-eval-results"
 
@@ -72,7 +72,9 @@ def parse_eval_args() -> argparse.Namespace:
     parser.add_argument("--tasks", type=str, default=None)
     parser.add_argument("--timestamp", type=str, default=None)
     parser.add_argument("--output_dir", type=str, default=None)
-    parser.add_argument("--results_dataset", type=str, default=RESULTS_REPO)
+    parser.add_argument("--requests_repo", type=str, default=REQUESTS_REPO)
+    parser.add_argument("--results_repo", type=str, default=RESULTS_REPO)
+    parser.add_argument("--leaderboard_results_repo", type=str, default=LEADERBOARD_RESULTS_REPO)
     parser.add_argument("--create_pr", type=bool, default=False, help="Whether to create pull requests when uploading")
     return parser.parse_args()
 
@@ -205,7 +207,7 @@ def main():
     logging.info(f"Tasks: {tasks}")
 
     snapshot_download(
-        repo_id=args.results_dataset,
+        repo_id=args.results_repo,
         revision="main",
         local_dir=LOCAL_DIR2,
         repo_type="dataset",
@@ -218,7 +220,7 @@ def main():
     for json_filepath in result_files:
         path_in_repo = json_filepath.replace(f"{args.output_dir}", "data")
         if not API.file_exists(
-            repo_id=args.results_dataset,
+            repo_id=args.results_repo,
             filename=path_in_repo,
             repo_type="dataset",
         ):
@@ -230,7 +232,7 @@ def main():
             API.upload_file(
                 path_or_fileobj=json_filepath,
                 path_in_repo=path_in_repo,
-                repo_id=args.results_dataset,
+                repo_id=args.results_repo,
                 commit_message=f"Upload results for model {args.model}",
                 create_pr=args.create_pr,
                 repo_type="dataset",
@@ -245,7 +247,7 @@ def main():
         API.upload_file(
             path_or_fileobj=fp.name,
             path_in_repo=f"{args.model}/results_leaderboard.json",
-            repo_id=LEADERBOARD_RESULTS_REPO,
+            repo_id=args.leaderboard_results_repo,
             commit_message=f"Update leaderboard for model {args.model}",
             create_pr=args.create_pr,
             repo_type="dataset",
@@ -254,11 +256,11 @@ def main():
 
 
     # update eval request status to FINISHED
-    eval_requests = get_eval_requests("RUNNING", LOCAL_DIR, REQUESTS_REPO)
+    eval_requests = get_eval_requests("RUNNING", LOCAL_DIR, args.requests_repo)
     this_eval_request = next((e for e in eval_requests if e.model == args.model), None)
     if this_eval_request is not None:
         # set status to finished
-        set_eval_request(this_eval_request, "FINISHED", REQUESTS_REPO, LOCAL_DIR, args.create_pr)
+        set_eval_request(this_eval_request, "FINISHED", args.requests_repo, LOCAL_DIR, args.create_pr)
         logging.info(f"Updated status of eval request for model {args.model} to FINISHED.")
     else:
         logging.warning(f"No running evaluation requests found for model {args.model}.")

@@ -57,17 +57,6 @@ cd cot-eval
 pip install -e ".[cuda]"
 ```
 
-With docker:
-
-```bash
-git clone https://github.com/logikon-ai/cot-eval.git
-cd cot-eval
-cat config.env
-... # modify config.env
-docker build -t cot-eval --build-arg="VLLM_VERSION=0.2.7" .
-export HUGGINGFACEHUB_API_TOKEN=...
-docker run -it --rm --gpus all -e HUGGINGFACEHUB_API_TOKEN cot-eval
-```
 
 
 ## Usage
@@ -77,6 +66,22 @@ See `run.sh` for an implementation of the pipeline.
 ```console
 cot-eval --help
 ```
+
+With docker:
+
+```bash
+git clone https://github.com/logikon-ai/cot-eval.git
+cd cot-eval
+vim config.env  # adapt config.env, set especially NEXT_MODEL_PATH="..."
+docker build -t cot-eval --build-arg="VLLM_VERSION=0.3.0" . # change vllm version if necessary
+export HUGGINGFACEHUB_API_TOKEN=... # use your private token
+docker run -it --rm --gpus all -e HUGGINGFACEHUB_API_TOKEN cot-eval
+```
+
+> **Note**
+>
+> Use a personal HUGGINGFACEHUB_API_TOKEN. Note that you have to be a member of the [Open CoT Leaderboard](https://huggingface.co/cot-leaderboard) for this to work.
+
 
 ## 🙏 Built with
 

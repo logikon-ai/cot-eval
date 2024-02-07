@@ -44,7 +44,7 @@ huggingface-cli login --token $HUGGINGFACEHUB_API_TOKEN
 # lookup model to-be evaluated
 
 if [[ -z "${NEXT_MODEL_PATH}" ]]; then
-  python scripts/lookup_pending_model.py --keys_file $LOTMP_NEXTMODELINFO --max_params $MAX_MODEL_PARAMS
+  python scripts/lookup_pending_model.py --keys_file $LOTMP_NEXTMODELINFO --max_params $MAX_MODEL_PARAMS --requests_repo $REQUESTS_REPO
   model=$(cat $LOTMP_NEXTMODELINFO | jq -r .model)
   revision=$(cat $LOTMP_NEXTMODELINFO | jq -r .revision)
   precision=$(cat $LOTMP_NEXTMODELINFO | jq -r .precision)
@@ -88,6 +88,7 @@ for config in "${arr_configkeys[@]}"
 do
     cot-eval \
         --config "${LOTMP_CONFIGSFOLDER}/${config}.yaml" \
+        --upload_dataset $TRACES_REPO \
         --hftoken $HUGGINGFACEHUB_API_TOKEN \
         --num_gpus $NUM_GPUS \
         --swap_space $swap_space
@@ -162,5 +163,8 @@ python scripts/upload_results.py \
     --tasks $TASKS \
     --timestamp $timestamp \
     --output_dir $LOTMP_ELEU_OUTPUTDIR \
+    --results_repo $RESULTS_REPO \
+    --requests_repo $REQUESTS_REPO \
+    --leaderboard_results_repo $LEADERBOARD_RESULTS_REPO \
     --create_pr $CREATE_PULLREQUESTS
 
