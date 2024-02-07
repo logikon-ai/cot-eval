@@ -15,6 +15,7 @@ import argparse
 import copy
 import logging
 import os
+import random
 import yaml
 
 import faker
@@ -81,6 +82,7 @@ def main():
 
             while True:
                 name = "-".join(fake.words(unique=True, nb=2))
+                name = name + "-" + str(random.randint(100, 999))
                 config_path = os.path.join(args.output_dir, f"{name}.yaml")
                 if not os.path.exists(config_path):
                     break
