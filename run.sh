@@ -79,7 +79,7 @@ arr_configkeys=(${configkeys//,/ })
 for config in "${arr_configkeys[@]}"
 do
     cot-eval \
-        --config $LOTMP_CONFIGSFOLDER/$config.yaml \
+        --config "${LOTMP_CONFIGSFOLDER}/${config}.yaml" \
         --hftoken $HUGGINGFACEHUB_API_TOKEN \
         --num_gpus $NUM_GPUS \
         --swap_space $swap_space
