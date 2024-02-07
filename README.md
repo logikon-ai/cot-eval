@@ -67,7 +67,7 @@ See `run.sh` for an implementation of the pipeline.
 cot-eval --help
 ```
 
-### With docker
+### With Docker
 
 ```bash
 git clone https://github.com/logikon-ai/cot-eval.git
