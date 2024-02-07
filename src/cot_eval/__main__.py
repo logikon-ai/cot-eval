@@ -31,7 +31,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--num_gpus", type=int, default=1, help="Number of gpus to use")
     parser.add_argument("--swap_space", type=int, default=4, help="Swap space to use")
     parser.add_argument("--hftoken", default=None, help="HF Token to use for upload")
-    parser.add_argument("--answer_shuffle_seed", tyoe=int, default=42, help="Seed for random shuffling of answers")
+    parser.add_argument("--answer_shuffle_seed", type=int, default=42, help="Seed for random shuffling of answers")
     return parser.parse_args()
 
 
