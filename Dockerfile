@@ -21,7 +21,7 @@ COPY ./config.env ./cot-eval/config.env
 RUN pip install --upgrade pip
 RUN pip uninstall transformer-engine -y
 
-RUN cd lm-evaluation-harness && pip install -e .
+RUN cd lm-evaluation-harness && pip install -e ".[vllm]"
 RUN cd cot-eval && pip install -e .
 RUN pip install -U vllm==${VLLM_VERSION}
 
