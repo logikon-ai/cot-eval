@@ -31,10 +31,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--num_gpus", type=int, default=1, help="Number of gpus to use")
     parser.add_argument("--swap_space", type=int, default=4, help="Swap space to use")
     parser.add_argument("--hftoken", default=None, help="HF Token to use for upload")
+    parser.add_argument("--answer_shuffle_seed", tyoe=int, default=42, help="Seed for random shuffling of answers")
     return parser.parse_args()
 
 
-def load_and_preprocess(task: str, token: str) -> Dataset:
+def load_and_preprocess(task: str, token: str, answer_shuffle_seed: int) -> Dataset:
     """Load and preprocess the task dataset"""
     ds = load_dataset(**TASKS_REGISTRY[task], token=token)
     logging.info(f"Loaded {task} dataset with {len(ds)} examples")
@@ -43,7 +44,7 @@ def load_and_preprocess(task: str, token: str) -> Dataset:
         """Permutate the options in the example"""
         gold_option = example["options"][example["answer"]]
         options = example["options"]
-        random.shuffle(options)
+        random.Random(answer_shuffle_seed).shuffle(options)
         example["options"] = options
         example["labels"] = ["ABCDEF"[i] for i in range(len(options))]
         example["answer"] = options.index(gold_option)
@@ -125,7 +126,7 @@ def main():
     # Preprocess the task data
     task_data = {}
     for task in tasks:
-        task_data[task] = load_and_preprocess(task, token=hftoken)
+        task_data[task] = load_and_preprocess(task, token=hftoken, answer_shuffle_seed=args.answer_shuffle_seed)
 
     # Load model
     logging.info(f"Loading vLLM model {config.model}")
