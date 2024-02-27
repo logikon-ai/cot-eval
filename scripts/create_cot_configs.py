@@ -82,7 +82,7 @@ def main():
 
             while True:
                 name = "-".join(fake.words(unique=True, nb=2))
-                name = name + "-" + str(random.randint(100, 999))
+                name = name + "-" + str(random.randint(1000, 9999))
                 config_path = os.path.join(args.output_dir, f"{name}.yaml")
                 if not os.path.exists(config_path):
                     break
