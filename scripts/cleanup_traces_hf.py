@@ -1,6 +1,6 @@
 """Clean-up traces dataset
 
-Detect unused reasoning traces in the dataset and removes them.
+Detect unused reasoning traces in the dataset and remove them.
 
 The reason why some traces are used stems from failures in the cot-eval pipeline:
 
