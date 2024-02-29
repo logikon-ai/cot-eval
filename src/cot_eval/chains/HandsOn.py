@@ -1,7 +1,7 @@
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable
-from langchain_community.llms import VLLM
+from langchain_core.language_models.llms import LLM
 
 from cot_eval import COTChain
 
@@ -34,7 +34,7 @@ Use the closing tag </reasoning> to indicate when you're done.
     stop_words = ["</reasoning>", "\n###"]
 
     @classmethod
-    def build(cls, llm: VLLM) -> Runnable:
+    def build(cls, llm: LLM) -> Runnable:
 
         prompt = PromptTemplate.from_template(cls.prompt_template)
         chain = (
