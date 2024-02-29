@@ -7,10 +7,27 @@ set +a
 
 set -e # exit on error
 
+# sanity checks for required environment variables
+
 if [[ -z "${HUGGINGFACEHUB_API_TOKEN}" ]]; then
-  echo "HUGGINGFACEHUB_API_TOKEN not found. Please set it in .env file."
+  echo "HUGGINGFACEHUB_API_TOKEN not found. Please set it in environment."
   exit 1
 fi
+
+if [[ -z "${LLM_BACKEND}" ]]; then
+  echo "LLM_BACKEND not specified. Please set it in config.env file (to, e.g., vllm, together-ai)."
+  exit 1
+fi
+
+if [ "$LLM_BACKEND" = "together-ai" ]: 
+  if [[ -z "${TOGETHER_API_KEY}" ]]; then
+    echo "TOGETHER_API_KEY not found. Please set it in environment."
+    exit 1
+  fi
+fi
+
+
+# Default vllm parameters
 
 if [[ -z "${GPU_MEMORY_UTILIZATION}" ]]; then
   gpu_memory_utilization=0.9
@@ -89,10 +106,11 @@ for config in "${arr_configkeys[@]}"
 do
     cot-eval \
         --config "${LOTMP_CONFIGSFOLDER}/${config}.yaml" \
+        --llm_backend $LLM_BACKEND \
         --upload_dataset $TRACES_REPO \
         --hftoken $HUGGINGFACEHUB_API_TOKEN \
         --num_gpus $NUM_GPUS \
-        --swap_space $swap_space
+        --vllm_swap_space $swap_space
 done
 
 

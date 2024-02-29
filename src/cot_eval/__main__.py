@@ -1,18 +1,15 @@
 import os
 import random
-import sys
-import json
 import logging
 import argparse
-import numpy as np
 
 from datasets import load_dataset, load_dataset_builder, disable_caching, Dataset
 from langchain_core.runnables import Runnable
-from langchain_community.llms import VLLM
 
 from cot_eval.COTEvalConfig import COTEvalConfig
 from cot_eval.chain_registry import CHAIN_REGISTRY
 from cot_eval.tasks_registry import TASKS_REGISTRY
+import cot_eval.utils as utils
 
 # Setup logging
 logging.basicConfig(
@@ -29,8 +26,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--upload_dataset", default="cot-leaderboard/cot-eval-traces", help="Dataset path to upload to")
     parser.add_argument("--create_pr", type=bool, default=False, help="Whether to create pull requests when uploading")
     parser.add_argument("--num_gpus", type=int, default=1, help="Number of gpus to use")
-    parser.add_argument("--swap_space", type=int, default=4, help="Swap space to use")
+    parser.add_argument("--vllm_swap_space", type=int, default=4, help="Swap space to use with vllm")
     parser.add_argument("--hftoken", default=None, help="HF Token to use for upload")
+    parser.add_argument("--llm_backend", choices=utils.BACKENDS, default="vllm", help="LLM Backend to use")
     parser.add_argument("--answer_shuffle_seed", type=int, default=42, help="Seed for random shuffling of answers")
     return parser.parse_args()
 
@@ -128,13 +126,13 @@ def main():
     for task in tasks:
         task_data[task] = load_and_preprocess(task, token=hftoken, answer_shuffle_seed=args.answer_shuffle_seed)
 
-    # Load model
-    logging.info(f"Loading vLLM model {config.model}")
-    llm = VLLM(
-        model=config.model,
-        **config.modelkwargs,
-        swap_space=args.swap_space, 
-        tensor_parallel_size=args.num_gpus,
+    # Initialize llm
+    logging.info(f"Initialize model {config.model} with backend {args.llm_backend}")
+    llm = utils.initialize_llm(
+        config,
+        args.llm_backend,
+        num_gpus=args.num_gpus,
+        vllm_swap_space=args.vllm_swap_space
     )
 
     # Build COT chain
@@ -144,8 +142,8 @@ def main():
     ## Test run COT chain
     #logging.info("Testing COT chain")
     #test_input = [
-    #    {"passage": "This is a test passage", "question_options": "This is a test question"},
-    #    {"passage": "This is a further test passage", "question_options": "This is a test question"},
+    #    {"passage": "Three sisters have 5 apples each.", "question_options": "How many apples have they in total?"},
+    #    {"passage": "Six brothers have 2 cars each.", "question_options": "How many cars have they in total?"},
     #]
     #test_traces = chain.batch(test_input)
     #logging.info(f"Tested COT chain: {test_traces}")
