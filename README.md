@@ -75,7 +75,7 @@ cd cot-eval
 vim config.env  # adapt config.env, set especially NEXT_MODEL_PATH="..."
 docker build -t cot-eval --build-arg="VLLM_VERSION=0.3.0" . # change vllm version if necessary
 export HUGGINGFACEHUB_API_TOKEN=... # use your private token
-docker run -it --rm --gpus all -e HUGGINGFACEHUB_API_TOKEN cot-eval
+docker run -it --rm --gpus --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 all -e HUGGINGFACEHUB_API_TOKEN cot-eval
 ```
 
 > **Note**
