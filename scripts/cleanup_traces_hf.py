@@ -139,7 +139,7 @@ def main():
         if not TOKEN:
             raise ValueError("No HF token specified")
 
-        if unused_traces_configs:
+        if unused_traces_configs or defects2:
             for unused in unused_traces_configs:
                 metadata["dataset_info"] = [c for c in metadata["dataset_info"] if c["config_name"] != unused]
                 metadata["configs"] = [c for c in metadata["configs"] if c["config_name"] != unused]
@@ -157,17 +157,22 @@ def main():
                 raise ValueError("Traces dataset is not consistent with results dataset. Aborting clean up. Dataset has not been changed.")
 
             #write readme to tmpfile
+            if not content.strip("\n "):
+                content = "# cot-eval-traces"
             with open(readme_path, "w") as f:
                 f.write("---\n")
                 f.write(yaml.dump(metadata, sort_keys=False))
                 f.write("---\n")
                 f.write(content+"\n")
+                f.flush()
 
                 cleanup_operations = [
                     CommitOperationAdd(path_in_repo="README.md", path_or_fileobj=readme_path),
                 ]
                 for unused in unused_traces_configs:
                     cleanup_operations.append(CommitOperationDelete(path_in_repo=f"{unused}/"))
+                for defect in defects2:
+                    cleanup_operations.append(CommitOperationDelete(path_in_repo=f"{defect}/"))
 
                 API.create_commit(
                     repo_id=args.traces_repo,
@@ -178,6 +183,7 @@ def main():
                 )
 
             logging.info("Cleaned up %d unused traces_configs", len(unused_traces_configs))
+            logging.info("Cleaned up %d defect traces_dirs", len(defects2))
 
 
 if __name__ == "__main__":
