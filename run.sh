@@ -1,9 +1,9 @@
 #!bin/bash
 
-set -a # automatically export all variables
-source config.env
-#source ../.env
-set +a
+# NOTE: env vars are now passed via docker run --env-file
+#set -a # automatically export all variables
+#source config.env 
+#set +a
 
 set -e # exit on error
 

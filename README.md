@@ -72,10 +72,17 @@ cot-eval --help
 ```bash
 git clone https://github.com/logikon-ai/cot-eval.git
 cd cot-eval
-vim config.env  # adapt config.env, set especially NEXT_MODEL_PATH="..."
 docker build -t cot-eval --build-arg="VLLM_VERSION=0.3.0" . # change vllm version if necessary
-export HUGGINGFACEHUB_API_TOKEN=... # use your private token
-docker run -it --rm --gpus --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 all -e HUGGINGFACEHUB_API_TOKEN cot-eval
+vim config.env  # adapt config.env, set especially NEXT_MODEL_PATH="..." and HUGGINGFACEHUB_API_TOKEN="..."
+docker run \
+  -it \
+  --rm \
+  --gpus all \
+  --ipc=host \
+  --shm-size=1g \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  --env-file ./config.env \
+  cot-eval
 ```
 
 > **Note**

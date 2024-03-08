@@ -12,10 +12,6 @@ WORKDIR $APP_HOME
 RUN git clone  https://github.com/logikon-ai/cot-eval.git
 RUN git clone https://github.com/EleutherAI/lm-evaluation-harness.git
 
-# Copy local config file to the container image.
-
-COPY ./config.env ./cot-eval/config.env
-
 # Install python packages
 
 RUN pip install --upgrade pip
