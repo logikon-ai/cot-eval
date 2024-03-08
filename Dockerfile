@@ -2,7 +2,8 @@ FROM nvcr.io/nvidia/pytorch:23.10-py3
 
 LABEL maintainer "Gregor Betz and the Logikon AI Team"
 
-ARG VLLM_VERSION=0.2.7
+ARG VLLM_VERSION=0.3.3
+ARG LM_EVAL_VERSION=0.4.0
 
 ENV APP_HOME . 
 WORKDIR $APP_HOME
@@ -10,7 +11,7 @@ WORKDIR $APP_HOME
 # Clone repos
 
 RUN git clone  https://github.com/logikon-ai/cot-eval.git
-RUN git clone https://github.com/EleutherAI/lm-evaluation-harness.git
+RUN git clone https://github.com/EleutherAI/lm-evaluation-harness.git@${LM_EVAL_VERSION}
 
 # Install python packages
 
