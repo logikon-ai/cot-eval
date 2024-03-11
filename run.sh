@@ -56,7 +56,7 @@ fi
 echo "Model to evaluate: $model : $revision. Precision: $precision"
 
 # set lm-eval-harness model_args
-lm_eval_model_args="pretrained=${model},revision=${revision},dtype=auto,tensor_parallel_size=${NUM_GPUS},gpu_memory_utilization=${gpu_memory_utilization},trust_remote_code=$TRUST_REMOTE_CODE"
+lm_eval_model_args="pretrained=${model},revision=${revision},dtype=${precision},tensor_parallel_size=${NUM_GPUS},gpu_memory_utilization=${gpu_memory_utilization},trust_remote_code=$TRUST_REMOTE_CODE"
 if [[ -z "${MAX_LENGTH}" ]]; then
   echo "No MAX_LENGTH specified in config."
 else
@@ -71,6 +71,7 @@ echo "lm-eval model_args: $lm_eval_model_args"
 python scripts/create_cot_configs.py \
     --model $model \
     --revision $revision \
+    --precision ${precision} \
     --chains $CHAINS \
     --model_kwargs "$MODELKWARGS" \
     --tasks $TASKS \
