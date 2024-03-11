@@ -88,7 +88,7 @@ docker run -it --rm --gpus all --ipc=host --shm-size=1g --ulimit memlock=-1 --ul
 git clone https://github.com/logikon-ai/cot-eval.git
 cd cot-eval
 docker build --no-cache -t cot-eval . 
-docker login
+docker login --username logikon
 docker tag cot-eval logikon/cot-eval:latest
 docker push logikon/cot-eval:latest
 ```
