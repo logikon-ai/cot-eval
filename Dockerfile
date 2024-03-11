@@ -2,7 +2,7 @@ FROM nvcr.io/nvidia/pytorch:23.10-py3
 
 LABEL maintainer "Gregor Betz and the Logikon AI Team"
 
-ARG VLLM_VERSION=0.3.3
+ARG VLLM_VERSION=0.3.2
 ARG LM_EVAL_VERSION=v0.4.1
 
 ENV APP_HOME . 
