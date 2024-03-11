@@ -28,6 +28,7 @@ def parse_eval_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, default=None)
     parser.add_argument("--revision", type=str, default=None)
+    parser.add_argument("--precision", type=str, default="auto")
     parser.add_argument("--chains", type=str, default=None)
     parser.add_argument("--model_kwargs", type=str, default=None)
     parser.add_argument("--tasks", type=str, default=None)
@@ -98,6 +99,7 @@ def main():
             for key, value in model_kwargs.items():
                 config["modelkwargs"][key] = value
             config["modelkwargs"]["revision"] = args.revision
+            config["modelkwargs"]["dtype"] = args.precision
 
             with open(config_path, "w") as fp:
                 yaml.dump(config, fp)
