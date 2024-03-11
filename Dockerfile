@@ -11,7 +11,7 @@ WORKDIR $APP_HOME
 # Clone repos
 
 RUN git clone  https://github.com/logikon-ai/cot-eval.git
-RUN git clone https://github.com/EleutherAI/lm-evaluation-harness.git@${LM_EVAL_VERSION}
+RUN git clone --branch ${LM_EVAL_VERSION} https://github.com/EleutherAI/lm-evaluation-harness.git
 
 # Install python packages
 
