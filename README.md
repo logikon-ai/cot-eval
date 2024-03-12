@@ -93,6 +93,32 @@ docker tag cot-eval logikon/cot-eval:latest
 docker push logikon/cot-eval:latest
 ```
 
+## With Enroot
+
+```bash
+# export TMPDIR=...
+cd $TMPDIR
+
+git clone https://github.com/logikon-ai/cot-eval.git
+# edit config
+vim cot-eval/config.env
+
+export ENROOT_DATA_PATH=$TMPDIR/enroot-data
+mkdir $ENROOT_DATA_PATH
+export ENROOT_CONFIG_PATH=$TMPDIR/enroot-config
+mkdir $ENROOT_CONFIG_PATH
+touch $ENROOT_CONFIG_PATH/enroot.config
+mkdir $ENROOT_CONFIG_PATH/environ.d
+cp cot-eval/config.env $ENROOT_CONFIG_PATH/environ.d
+
+enroot import docker://logikon/cot-eval
+enroot create --name cot-eval logikon+cot-eval.sqsh
+rm logikon+cot-eval.sqsh
+
+enroot start --rw cot-eval
+```
+
+
 
 ## 🙏 Built with
 
