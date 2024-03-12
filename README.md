@@ -82,7 +82,7 @@ docker run -it --rm --gpus all --ipc=host --shm-size=1g --ulimit memlock=-1 --ul
 > Use a personal HUGGINGFACEHUB_API_TOKEN. Note that you have to be a member of the [Open CoT Leaderboard](https://huggingface.co/cot-leaderboard) for this to work.
 
 
-## Build and push Docker image
+### Build and push Docker image
 
 ```bash
 git clone https://github.com/logikon-ai/cot-eval.git
@@ -93,7 +93,7 @@ docker tag cot-eval logikon/cot-eval:latest
 docker push logikon/cot-eval:latest
 ```
 
-## With Enroot
+### With Enroot
 
 ```bash
 # export TMPDIR=...
