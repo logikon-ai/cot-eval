@@ -67,31 +67,40 @@ See `run.sh` for an implementation of the pipeline.
 cot-eval --help
 ```
 
-### With Docker 🐳
-
-```bash
-git clone https://github.com/logikon-ai/cot-eval.git
-cd cot-eval
-docker build --no-cache -t cot-eval --build-arg="VLLM_VERSION=0.3.0" . # change vllm version if necessary
-vim config.env  # adapt config.env, set especially NEXT_MODEL_PATH="..." and HUGGINGFACEHUB_API_TOKEN="..."
-docker run -it --rm --gpus all --ipc=host --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 --env-file config.env cot-eval
-```
-
 > **Note**
 >
 > Use a personal HUGGINGFACEHUB_API_TOKEN. Note that you have to be a member of the [Open CoT Leaderboard](https://huggingface.co/cot-leaderboard) for this to work.
 
+### With Docker 🐳
 
-### Build and push Docker image
+Step 1. Clone `cot-eval` repo.
 
 ```bash
 git clone https://github.com/logikon-ai/cot-eval.git
 cd cot-eval
-docker build --no-cache -t cot-eval . 
-docker login --username logikon
-docker tag cot-eval logikon/cot-eval:latest
-docker push logikon/cot-eval:latest
 ```
+
+Step 2. Pull docker image
+```bash
+docker pull logikon/cot-eval:latest
+```
+
+Step 2a. (Alternatively:) Build docker image locally (allows you to adapt build args, e.g. VLLM_VERSION)
+```bash
+docker build --no-cache -t cot-eval --build-arg="VLLM_VERSION=0.3.0" . # change vllm version if necessary
+```
+
+Step 3. Set parameters and arguments
+```bash
+vim config.env  # adapt config.env, set especially NEXT_MODEL_PATH="..." and HUGGINGFACEHUB_API_TOKEN="..."
+```
+
+Step 4. Run docker container
+```bash
+cat config.env  # check
+docker run -it --rm --gpus all --ipc=host --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 --env-file config.env logikon/cot-eval:latest
+```
+
 
 ### With Enroot
 
@@ -117,6 +126,21 @@ rm logikon+cot-eval.sqsh
 
 enroot start --rw cot-eval
 ```
+
+
+## Misc
+
+### Build and push Docker image
+
+```bash
+git clone https://github.com/logikon-ai/cot-eval.git
+cd cot-eval
+docker build --no-cache -t cot-eval . 
+docker login --username logikon
+docker tag cot-eval logikon/cot-eval:latest
+docker push logikon/cot-eval:latest
+```
+
 
 
 
