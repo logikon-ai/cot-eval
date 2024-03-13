@@ -53,6 +53,15 @@ def main():
         
         for task in config["tasks"]:
             for subtype in ["base", "cot"]:
+
+                # check if base harness_task (without cot traces) has been created for task before
+                # -> we avoid evaluating one and the same base task (without cot traces) multiple times
+                if subtype == "base" and any(
+                    key.endswith(f"_{task}_{subtype}")
+                    for key in created_harness_tasks_keys["base"]
+                ):
+                    continue
+
                 harness_task = {
                     "task": f"{config['name']}_{task}_{subtype}",
                     "dataset_path": args.traces_dataset_path,

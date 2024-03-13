@@ -144,12 +144,18 @@ def get_leaderboard_record(
     deltas = {k: [] for k in tasks}
     rates = {k: [] for k in tasks}
     for key_cot, record_cot in raw_results["cot"]:
+
+        current_task = next(t for t in tasks if t in key_cot.split("_"))
+
+        # find corresponding base record
+        # N.B.: corresp. base record need not agree with current_task-id 
+        # (see `scripts/create_lm_eval_harness_tasks.py`, lines 57ff)
         record_base = next(iter(
             r for k,r in raw_results["base"]
-            if k.replace("base", "cot") == key_cot
+            if k.replace("_base", "_cot").endswith(key_cot[len(current_task):])
             ), None)
         if record_base is None:
-            logging.warning(f"Could not find corresponding base record for {key_cot}.")
+            logging.warning(f"Could not find corresponding base record for {key_cot}. Skipping this cot eval record.")
             continue
 
         if "acc" in record_base:
@@ -166,8 +172,6 @@ def get_leaderboard_record(
         else:
             logging.warning(f"Could not find acc for cot record {record_cot}.")
             continue
-
-        current_task = next(t for t in tasks if t in key_cot.split("_"))
 
         deltas[current_task].append((acc_cot - acc_base))
         rates[current_task].append((acc_cot - acc_base)/acc_base)
