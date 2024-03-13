@@ -19,6 +19,7 @@ A framework for evaluating the effectiveness of chain-of-thought reasoning in la
 - [Pipeline](#pipeline)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Misc](#misc)
 - [Built with](#built-with)
 - [License](#license)
 
@@ -58,8 +59,11 @@ pip install -e ".[cuda]"
 ```
 
 
-
 ## Usage
+
+> **Note**
+>
+> Use a personal HUGGINGFACEHUB_API_TOKEN. Note that you have to be a member of the [Open CoT Leaderboard](https://huggingface.co/cot-leaderboard) for this to work.
 
 See `run.sh` for an implementation of the pipeline.
 
@@ -67,9 +71,6 @@ See `run.sh` for an implementation of the pipeline.
 cot-eval --help
 ```
 
-> **Note**
->
-> Use a personal HUGGINGFACEHUB_API_TOKEN. Note that you have to be a member of the [Open CoT Leaderboard](https://huggingface.co/cot-leaderboard) for this to work.
 
 ### With Docker 🐳
 
