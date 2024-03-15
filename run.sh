@@ -151,7 +151,7 @@ lm-eval --model vllm \
     --model_args $lm_eval_model_args \
     --tasks ${harness_tasks_cot} \
     --num_fewshot 0 \
-    --batch_size auto \
+    --batch_size auto:6 \
     --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/cot/${timestamp}.json \
     --include_path $LOTMP_ELEU_CONFIGSFOLDER
 
