@@ -140,6 +140,7 @@ fi
 ##############################
 # BASE and COT evaluation
 # run lm evaluation harness for each of the tasks
+
 # without reasoning traces
 lm-eval --model vllm \
     --model_args $lm_eval_model_args \
@@ -148,15 +149,26 @@ lm-eval --model vllm \
     --batch_size auto \
     --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/base/${timestamp}.json \
     --include_path $LOTMP_ELEU_CONFIGSFOLDER
-# with reasoning traces
-lm-eval --model vllm \
-    --model_args $lm_eval_model_args \
-    --tasks ${harness_tasks_cot} \
-    --num_fewshot 0 \
-    --batch_size auto:6 \
-    --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/cot/${timestamp}.json \
-    --include_path $LOTMP_ELEU_CONFIGSFOLDER
 
+# with reasoning traces
+arrHT=(${harness_tasks_cot//,/ })
+ht_batch_size=5
+# batched processing of harness_tasks_cot
+for((i=0; i < ${#arrHT[@]}; i+=ht_batch_size))
+do
+    ht_batch=( "${arrHT[@]:i:ht_batch_size}" )
+    ht_batch_s=$(printf ",%s" "${ht_batch[@]}")
+    ht_batch_s=${ht_batch_s:1}
+    echo "Evaluating cot tasks: $ht_batch_s"
+
+    lm-eval --model vllm \
+        --model_args $lm_eval_model_args \
+        --tasks ${ht_batch_s} \
+        --num_fewshot 0 \
+        --batch_size auto \
+        --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/cot/${timestamp}_idx${i}.json \
+        --include_path $LOTMP_ELEU_CONFIGSFOLDER
+done
 
 ##############################
 # collect and upload results
