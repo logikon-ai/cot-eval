@@ -152,7 +152,7 @@ def get_leaderboard_record(
         # (see `scripts/create_lm_eval_harness_tasks.py`, lines 57ff)
         record_base = next(iter(
             r for k,r in raw_results["base"]
-            if k.replace("_base", "_cot").endswith(key_cot[len(current_task):])
+            if k.endswith(f"_{current_task}_base")
             ), None)
         if record_base is None:
             logging.warning(f"Could not find corresponding base record for {key_cot}. Skipping this cot eval record.")
