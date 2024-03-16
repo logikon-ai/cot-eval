@@ -93,7 +93,8 @@ def main():
 
 
     logging.info("Found %d cot_configs", len(cot_configs))
-    logging.info("Found %d unknown_aliases", len(unknown_aliases))
+    icon = "⚠️ " if unknown_aliases else "✅"
+    logging.info("%s Found %d unknown_aliases", icon, len(unknown_aliases))
 
 
 
@@ -130,13 +131,14 @@ def main():
         if missing_traces_configs:
             logging.warning("🛑 Found %d missing traces_configs", len(missing_traces_configs))
 
-        logging.info("Found %d unused traces_configs of %d", len(unused_traces_configs), len(traces_configs))
+        icon = "⚠️ " if defects1 or defects2 or missing_traces_configs or unused_traces_configs else "✅"
+        logging.info("%s Found %d unused traces_configs of %d", icon, len(unused_traces_configs), len(traces_configs))
 
         if not args.do_cleanup:
             if defects1 or defects2 or missing_traces_configs or unused_traces_configs:
-                logging.info("⚠️  Check completed. To cleanup dataset, set --do_cleanup arg.")
+                logging.info("Check completed. To cleanup dataset, set --do_cleanup arg.")
             else:
-                logging.info("✅ Check completed. All clear.")
+                logging.info("Check completed. All clear.")
             return
 
         if not TOKEN:
