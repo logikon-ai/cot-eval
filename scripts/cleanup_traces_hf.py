@@ -123,17 +123,20 @@ def main():
 
         defects1 = [c for c in traces_configs if c not in traces_datadirs]
         if defects1:
-            logging.warning("⚠️  Found %d traces_configs without data directory. Traces dataset is defect.", len(defects1))
+            logging.warning("🛑 Found %d traces_configs without data directory. Traces dataset is defect.", len(defects1))
         defects2 = [c for c in traces_datadirs if c not in traces_configs]
         if defects2:
-            logging.warning("⚠️  Found %d traces_datadirs without config. Traces dataset is defect.", len(defects2))
+            logging.warning("🛑 Found %d traces_datadirs without config. Traces dataset is defect.", len(defects2))
         if missing_traces_configs:
-            logging.warning("⚠️  Found %d missing traces_configs", len(missing_traces_configs))
+            logging.warning("🛑 Found %d missing traces_configs", len(missing_traces_configs))
 
         logging.info("Found %d unused traces_configs of %d", len(unused_traces_configs), len(traces_configs))
 
         if not args.do_cleanup:
-            logging.info("Check completed. To cleanup dataset, set --do_cleanup arg.")
+            if defects1 or defects2 or missing_traces_configs or unused_traces_configs:
+                logging.info("⚠️  Check completed. To cleanup dataset, set --do_cleanup arg.")
+            else:
+                logging.info("✅ Check completed. All clear.")
             return
 
         if not TOKEN:
