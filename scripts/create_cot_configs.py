@@ -31,6 +31,9 @@ def parse_eval_args() -> argparse.Namespace:
     parser.add_argument("--precision", type=str, default="auto")
     parser.add_argument("--chains", type=str, default=None)
     parser.add_argument("--model_kwargs", type=str, default=None)
+    parser.add_argument("--num_gpus", type=int, default=1, help="Number of gpus to use")
+    parser.add_argument("--swap_space", type=int, default=4, help="Swap space to use")
+    parser.add_argument("--max_model_len", type=int, default=None, help="Maximum model length")
     parser.add_argument("--tasks", type=str, default=None)
     parser.add_argument("--output_dir", type=str, default=None)
     parser.add_argument("--template_path", type=str, default=None)
@@ -98,8 +101,15 @@ def main():
                 config["modelkwargs"] = {}
             for key, value in model_kwargs.items():
                 config["modelkwargs"][key] = value
-            config["modelkwargs"]["revision"] = args.revision
             config["modelkwargs"]["dtype"] = args.precision
+            config["modelkwargs"]["tensor_parallel_size"] = args.num_gpus
+
+            if "vllm_kwargs" not in config["modelkwargs"]:
+                config["modelkwargs"]["vllm_kwargs"] = {}
+            config["modelkwargs"]["vllm_kwargs"]["revision"] = args.revision
+            config["modelkwargs"]["vllm_kwargs"]["swap_space"] = args.swap_space
+            if args.max_model_len is not None:
+                config["modelkwargs"]["vllm_kwargs"]["max_model_len"] = args.max_model_len
 
             with open(config_path, "w") as fp:
                 yaml.dump(config, fp)

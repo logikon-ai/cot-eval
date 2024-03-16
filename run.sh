@@ -59,8 +59,10 @@ echo "Model to evaluate: $model : $revision. Precision: $precision"
 lm_eval_model_args="pretrained=${model},revision=${revision},dtype=${precision},tensor_parallel_size=${NUM_GPUS},gpu_memory_utilization=${gpu_memory_utilization},trust_remote_code=$TRUST_REMOTE_CODE"
 if [[ -z "${MAX_LENGTH}" ]]; then
   echo "No MAX_LENGTH specified in config."
+  cot_config_extra_args=""
 else
   lm_eval_model_args="${lm_eval_model_args},max_length=$MAX_LENGTH"
+  cot_config_extra_args="--max_model_len $MAX_LENGTH"
 fi
 echo "lm-eval model_args: $lm_eval_model_args"
 
@@ -68,7 +70,7 @@ echo "lm-eval model_args: $lm_eval_model_args"
 ##############################
 # create CoT configs
 # a 'config' defines how reasoning traces are generated for a given task
-python scripts/create_cot_configs.py \
+python scripts/create_cot_configs.py $cot_config_extra_args \
     --model $model \
     --revision $revision \
     --precision ${precision} \
@@ -76,7 +78,9 @@ python scripts/create_cot_configs.py \
     --model_kwargs "$MODELKWARGS" \
     --tasks $TASKS \
     --output_dir $LOTMP_CONFIGSFOLDER \
-    --keys_file $LOTMP_CONFIGKEYSINFO
+    --keys_file $LOTMP_CONFIGKEYSINFO \
+    --num_gpus $NUM_GPUS \
+    --swap_space $swap_space
 configkeys=$(cat $LOTMP_CONFIGKEYSINFO)  # format is "config1,config2,config3"
 echo "Created configs: $configkeys and stored in $LOTMP_CONFIGSFOLDER"
 
@@ -91,9 +95,7 @@ do
     cot-eval \
         --config "${LOTMP_CONFIGSFOLDER}/${config}.yaml" \
         --upload_dataset $TRACES_REPO \
-        --hftoken $HUGGINGFACEHUB_API_TOKEN \
-        --num_gpus $NUM_GPUS \
-        --swap_space $swap_space
+        --hftoken $HUGGINGFACEHUB_API_TOKEN
 done
 
 
