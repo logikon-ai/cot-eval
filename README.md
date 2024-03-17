@@ -128,6 +128,13 @@ rm logikon+cot-eval.sqsh
 enroot start --rw cot-eval
 ```
 
+Alternatively:
+
+```bash
+ENROOT_SQUASH_OPTIONS='-comp lz4 -noD' enroot import docker://logikon/cot-eval
+enroot start --rw logikon+cot-eval.sqsh
+```
+
 
 ## Misc
 
