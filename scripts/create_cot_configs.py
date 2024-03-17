@@ -70,14 +70,18 @@ def main():
     created_configs_keys = []
 
     if args.template_path is None:
+        logging.info("No template path specified. Trying to load template from output dir.")
         args.template_path = os.path.join(args.output_dir, "template.yaml")
+    else:
+        if not os.path.exists(args.template_path):
+            raise ValueError(f"Specified template file {args.template_path} does not exist.")
 
     if os.path.exists(args.template_path):
         with open(args.template_path, "r") as fp:
             # read yaml file
             template = yaml.safe_load(fp)
     else:
-        logging.warning(f"Template file {args.template_path} does not exist. Using empty template.")
+        logging.warning(f"No template in {args.template_path}. Using empty template.")
         template = {}
 
     for chain in chains:
