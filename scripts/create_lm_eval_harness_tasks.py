@@ -38,7 +38,8 @@ def main():
     if args.output_dir is None:
         raise ValueError("output_dir must be specified")
     if not os.path.isdir(args.output_dir):
-        raise ValueError("output_dir must be a directory")
+        logging.info("output_dir does not exist, creating it")
+        os.makedirs(args.output_dir)
     if not os.path.isdir(args.configs_dir):
         raise ValueError(f"configs_dir is not a directory: {args.configs_dir}")
 
