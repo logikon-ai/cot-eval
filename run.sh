@@ -26,12 +26,12 @@ fi
 
 # Local TMPPATHS to store intermediate files
 
-LOTMP_NEXTMODELINFO="./next_model.json"  # stores info about which model to evaluate next
-LOTMP_CONFIGKEYSINFO="./config_keys.txt"  # stores names of cot-eval configs that will be used
-LOTMP_CONFIGSFOLDER="src/cot_eval/configs"  # folder with cot-eval configs that will be used
-LOTMP_ELEU_CONFIGSFOLDER="./eleuther/tasks/logikon"  # folder with lm-eval-harness tasks
-LOTMP_ELEU_CONFIGSINFO="./lm_eval_harness_tasks.json"  # groups names of lm-eval-harness tasks that will be used
-LOTMP_ELEU_OUTPUTDIR="./eleuther/output"  # folder with lm-eval-harness output
+LOTMP_NEXTMODELINFO="$COTEVAL_CACHE_DIR/next_model.json"  # stores info about which model to evaluate next
+LOTMP_CONFIGKEYSINFO="$COTEVAL_CACHE_DIR/config_keys.txt"  # stores names of cot-eval configs that will be used
+LOTMP_CONFIGSFOLDER="$COTEVAL_CACHE_DIR/cot_eval_configs"  # folder with cot-eval configs that will be used
+LOTMP_ELEU_CONFIGSFOLDER="$COTEVAL_CACHE_DIR/eleuther/tasks/logikon"  # folder with lm-eval-harness tasks
+LOTMP_ELEU_CONFIGSINFO="$COTEVAL_CACHE_DIR/lm_eval_harness_tasks.json"  # groups names of lm-eval-harness tasks that will be used
+LOTMP_ELEU_OUTPUTDIR="$COTEVAL_CACHE_DIR/eleuther/output"  # folder with lm-eval-harness output
 
 
 ##############################
