@@ -59,7 +59,8 @@ def main():
     if args.output_dir is None:
         raise ValueError("output_dir must be specified")
     if not os.path.isdir(args.output_dir):
-        raise ValueError("output_dir must be a directory")
+        logging.info("output_dir does not exist, creating it")
+        os.makedirs(args.output_dir)
 
     chains = args.chains.split(",")
     tasks = args.tasks.split(",")

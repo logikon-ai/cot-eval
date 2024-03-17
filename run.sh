@@ -26,6 +26,10 @@ fi
 
 # Local TMPPATHS to store intermediate files
 
+if [[ -z "${COTEVAL_CACHE_DIR}" ]]; then
+  COTEVAL_CACHE_DIR="./cot-eval-cache"
+fi
+
 LOTMP_NEXTMODELINFO="$COTEVAL_CACHE_DIR/next_model.json"  # stores info about which model to evaluate next
 LOTMP_CONFIGKEYSINFO="$COTEVAL_CACHE_DIR/config_keys.txt"  # stores names of cot-eval configs that will be used
 LOTMP_CONFIGSFOLDER="$COTEVAL_CACHE_DIR/cot_eval_configs"  # folder with cot-eval configs that will be used
