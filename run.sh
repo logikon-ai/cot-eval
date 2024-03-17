@@ -78,7 +78,7 @@ python scripts/create_cot_configs.py $cot_config_extra_args \
     --model_kwargs "$MODELKWARGS" \
     --tasks $TASKS \
     --output_dir $LOTMP_CONFIGSFOLDER \
-    --template_path "./src/cot_eval/configs/template.yaml"
+    --template_path "./src/cot_eval/configs/template.yaml" \
     --keys_file $LOTMP_CONFIGKEYSINFO \
     --num_gpus $NUM_GPUS \
     --swap_space $swap_space
