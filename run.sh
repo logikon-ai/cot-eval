@@ -111,6 +111,8 @@ done
 python scripts/create_lm_eval_harness_tasks.py \
     --configs $configkeys \
     --output_dir $LOTMP_ELEU_CONFIGSFOLDER \
+    --configs_dir $LOTMP_CONFIGSFOLDER \
+    --traces_dataset_path $TRACES_REPO \
     --keys_file $LOTMP_ELEU_CONFIGSINFO
 harness_tasks_base=$(cat $LOTMP_ELEU_CONFIGSINFO | jq -r .base) # format is "task1,task2,task3"
 harness_tasks_cot=$(cat $LOTMP_ELEU_CONFIGSINFO | jq -r .cot) # format is "task1,task2,task3"

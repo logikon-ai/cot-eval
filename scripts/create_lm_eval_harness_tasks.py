@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 def parse_eval_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--configs", type=str, default=None)
-    parser.add_argument("--configs_dir", type=str, default="src/cot_eval/configs")
+    parser.add_argument("--configs_dir", type=str, default=None)
     parser.add_argument("--traces_dataset_path", type=str, default="cot-leaderboard/cot-eval-traces")
     parser.add_argument("--output_dir", type=str, default=None)
     parser.add_argument("--keys_file", type=str, default=None)
