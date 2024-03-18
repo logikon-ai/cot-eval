@@ -37,6 +37,8 @@ LOTMP_ELEU_CONFIGSFOLDER="$COTEVAL_CACHE_DIR/eleuther/tasks/logikon"  # folder w
 LOTMP_ELEU_CONFIGSINFO="$COTEVAL_CACHE_DIR/lm_eval_harness_tasks.json"  # groups names of lm-eval-harness tasks that will be used
 LOTMP_ELEU_OUTPUTDIR="$COTEVAL_CACHE_DIR/eleuther/output"  # folder with lm-eval-harness output
 
+# cp pre-built eleuther tasks and templates to cache dir
+cp -r ./eleuther/tasks/logikon/* $LOTMP_ELEU_CONFIGSFOLDER
 
 ##############################
 # login to huggingface hub
