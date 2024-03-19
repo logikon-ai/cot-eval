@@ -38,6 +38,7 @@ LOTMP_ELEU_CONFIGSINFO="$COTEVAL_CACHE_DIR/lm_eval_harness_tasks.json"  # groups
 LOTMP_ELEU_OUTPUTDIR="$COTEVAL_CACHE_DIR/eleuther/output"  # folder with lm-eval-harness output
 
 # cp pre-built eleuther tasks and templates to cache dir
+mkdir -p $LOTMP_ELEU_CONFIGSFOLDER
 cp -r ./eleuther/tasks/logikon/* $LOTMP_ELEU_CONFIGSFOLDER
 
 ##############################
