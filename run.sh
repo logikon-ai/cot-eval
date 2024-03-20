@@ -88,6 +88,7 @@ python scripts/create_cot_configs.py $cot_config_extra_args \
     --template_path "./src/cot_eval/configs/template.yaml" \
     --keys_file $LOTMP_CONFIGKEYSINFO \
     --num_gpus $NUM_GPUS \
+    --gpu_memory_utilization $gpu_memory_utilization \
     --swap_space $swap_space
 configkeys=$(cat $LOTMP_CONFIGKEYSINFO)  # format is "config1,config2,config3"
 echo "Created configs: $configkeys and stored in $LOTMP_CONFIGSFOLDER"
