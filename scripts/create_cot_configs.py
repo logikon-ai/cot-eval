@@ -32,7 +32,7 @@ def parse_eval_args() -> argparse.Namespace:
     parser.add_argument("--chains", type=str, default=None)
     parser.add_argument("--model_kwargs", type=str, default=None)
     parser.add_argument("--num_gpus", type=int, default=1, help="Number of gpus to use")
-    parser.add_argument("--gpu_memory_utilization", type=str, default=None, help="GPU memory utilization")
+    parser.add_argument("--gpu_memory_utilization", type=float, default=None, help="GPU memory utilization")
     parser.add_argument("--swap_space", type=int, default=4, help="Swap space to use")
     parser.add_argument("--max_model_len", type=int, default=None, help="Maximum model length")
     parser.add_argument("--tasks", type=str, default=None)
