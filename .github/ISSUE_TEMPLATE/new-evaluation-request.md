@@ -1,6 +1,6 @@
 ---
 name: New evaluation request
-about: Submit and logs evaluation request and status for new model
+about: Submit and log evaluation request and status for new model
 title: 'Evaluate: <NEXT_MODEL_PATH>'
 labels: eval_request
 assignees: ''
