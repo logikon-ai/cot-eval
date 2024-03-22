@@ -23,6 +23,10 @@ RUN cd cot-eval && pip install -e .
 RUN pip install -U vllm==${VLLM_VERSION}
 
 
+# Environment variables
+
+ENV HF_HUB_ENABLE_HF_TRANSFER="1"
+
 # Run cot-eval script on startup
 
 WORKDIR ${APP_HOME}/cot-eval
