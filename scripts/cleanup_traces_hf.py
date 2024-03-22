@@ -36,6 +36,7 @@ def parse_eval_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--results_repo", type=str, default=RESULTS_REPO)
     parser.add_argument("--traces_repo", type=str, default=TRACES_REPO)
+    parser.add_argument("--verbose", type=bool, default=False)
     parser.add_argument("--do_cleanup", type=bool, default=False)
     return parser.parse_args()
 
@@ -52,7 +53,8 @@ def parse_readme(readme_path: str):
         raise ValueError(f"Invalid file {readme_path}. Expected --- at the end of metadata section")
 
     metadata = yaml.safe_load("".join(lines[1:idx_md_end]))
-    content = "".join(lines[idx_md_end+1:])
+    content = "\n".join(lines[idx_md_end+1:])
+    content = content.strip("\n ") + "\n"
 
     return metadata, content
 
@@ -125,14 +127,26 @@ def main():
         defects1 = [c for c in traces_configs if c not in traces_datadirs]
         if defects1:
             logging.warning("🛑 Found %d traces_configs without data directory. Traces dataset is defect.", len(defects1))
+            if args.verbose:
+                for e, defect in enumerate(defects1):
+                    logging.info(f"Defect traces_config #{e}:\n{defect}")
         defects2 = [c for c in traces_datadirs if c not in traces_configs]
         if defects2:
             logging.warning("🛑 Found %d traces_datadirs without config. Traces dataset is defect.", len(defects2))
+            if args.verbose:
+                for e, defect in enumerate(defects2):
+                    logging.info(f"Defect traces_dir #{e}: {defect}")
         if missing_traces_configs:
             logging.warning("🛑 Found %d missing traces_configs", len(missing_traces_configs))
+            if args.verbose:
+                for e, missing in enumerate(missing_traces_configs):
+                    logging.info(f"Missing traces_config #{e}: {missing}")
 
         icon = "⚠️ " if defects1 or defects2 or missing_traces_configs or unused_traces_configs else "✅"
         logging.info("%s Found %d unused traces_configs of %d", icon, len(unused_traces_configs), len(traces_configs))
+        if args.verbose:
+            for e, unused in enumerate(unused_traces_configs):
+                logging.info(f"Unused traces_config #{e}: {unused}")
 
         if not args.do_cleanup:
             if defects1 or defects2 or missing_traces_configs or unused_traces_configs:
