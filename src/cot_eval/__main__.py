@@ -1,10 +1,8 @@
 import os
 import random
-import sys
-import json
 import logging
 import argparse
-import numpy as np
+import time
 
 from datasets import load_dataset, load_dataset_builder, disable_caching, Dataset
 from langchain_core.runnables import Runnable
@@ -21,6 +19,10 @@ logging.basicConfig(
 )
 # Disable caching
 disable_caching()
+
+
+MAX_RETRIALS_PUSH_TO_HUB = 5
+RETRIALS_INTERVAL = 30
 
 
 def parse_args() -> argparse.Namespace:
@@ -87,7 +89,7 @@ def has_config(path: str, config_name: str, token: str) -> bool:
     try:
         load_dataset_builder(path, name=config_name, token=token)
         return True
-    except:
+    except:  # noqa: E722
         return False
 
 
@@ -156,17 +158,32 @@ def main():
     # Upload reasoning traces
     logging.info("Uploading datasets with reasoning traces")
     for task, ds in cot_data.items():
-        ds.push_to_hub(
-            repo_id=args.upload_dataset,
-            config_name=f"{config.name}-{task}",
-            split="test",
-            commit_message=f"Add reasoning dataset for config {config.name} and task {task}",
-            commit_description=config.to_yaml(),
-            create_pr=args.create_pr,
-            token=hftoken,
-            private=True,
-        )
-        logging.info(f"Uploaded reasoning traces for {task}")
+
+        retrials_count = 0
+        while retrials_count < MAX_RETRIALS_PUSH_TO_HUB:
+            try:
+                ds.push_to_hub(
+                    repo_id=args.upload_dataset,
+                    config_name=f"{config.name}-{task}",
+                    split="test",
+                    commit_message=f"Add reasoning dataset for config {config.name} and task {task}",
+                    commit_description=config.to_yaml(),
+                    create_pr=args.create_pr,
+                    token=hftoken,
+                    private=True,
+                )
+                logging.info(f"Uploaded reasoning traces for {task}")
+                break
+            except Exception as e:
+                logging.error(f"Error uploading dataset for {task}: {e}")
+                retrials_count += 1
+                logging.info(f"Retrying in {RETRIALS_INTERVAL} seconds")
+                time.sleep(RETRIALS_INTERVAL)
+
+        if retrials_count == MAX_RETRIALS_PUSH_TO_HUB:
+            logging.error(f"Failed to upload dataset for {task}")
+            raise RuntimeError(f"Failed to upload dataset for {task}")
+
 
 
 
