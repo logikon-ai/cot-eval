@@ -108,7 +108,15 @@ def get_eval_requests(job_status: list, local_dir: str, hf_repo: str) -> list[Ev
     Returns:
         `list[EvalRequest]`: a list of model info dicts.
     """
-    snapshot_download(repo_id=hf_repo, revision="main", local_dir=local_dir, repo_type="dataset", max_workers=60, token=TOKEN)
+    snapshot_download(
+        repo_id=hf_repo,
+        revision="main",
+        local_dir=local_dir,
+        repo_type="dataset",
+        etag_timeout=30,        
+        max_workers=60,
+        token=TOKEN,
+    )
     json_files = glob.glob(f"{local_dir}/**/*.json", recursive=True)
 
     eval_requests = []
@@ -215,6 +223,7 @@ def main():
         revision="main",
         local_dir=LOCAL_DIR2,
         repo_type="dataset",
+        etag_timeout=30,
         max_workers=60,
         token=TOKEN
     )
