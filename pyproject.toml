@@ -57,6 +57,8 @@ path = "src/cot_eval/__about__.py"
 [tool.hatch.envs.default]
 dependencies = [
   "coverage[toml]>=6.5",
+  "click",
+  "colorama",
   "pyyaml",
   "pytest",
 ]
