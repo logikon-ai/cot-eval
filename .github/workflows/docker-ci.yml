@@ -45,5 +45,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          build-args: VLLM_VERSION=${{ env.VLLM_VERSION }},LM_EVAL_VERSION=${{ env.LM_EVAL_VERSION }}
+          build-args: |
+            VLLM_VERSION=${{ env.VLLM_VERSION }}
+            LM_EVAL_VERSION=${{ env.LM_EVAL_VERSION }}
           tags: logikon/cot-eval:latest,logikon/cot-eval:vllm-${{ env.VLLM_VERSION }}_harness-${{ env.LM_EVAL_VERSION }}
