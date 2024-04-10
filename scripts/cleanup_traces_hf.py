@@ -84,19 +84,22 @@ def main():
                 data = result.get("results", {})
                 for _, v in data.items():
                     if v["alias"].endswith("_cot"):
-                        cot_configs.append(v["alias"][:-4])    
+                        cot_configs.append({"name": v["alias"][:-4], "path": json_filepath})    
                     elif v["alias"].endswith("_base"):
                         continue
                     elif v["alias"].endswith("_orig"):
                         continue
                     else:
                         logging.debug(f"Unknown alias {v['alias']}. Ignoring entry.")
-                        unknown_aliases.append(v["alias"])
+                        unknown_aliases.append({"name": v["alias"], "path": json_filepath})
 
 
     logging.info("Found %d cot_configs", len(cot_configs))
     icon = "⚠️ " if unknown_aliases else "✅"
     logging.info("%s Found %d unknown_aliases", icon, len(unknown_aliases))
+    if args.verbose:
+        for e, unknown in enumerate(unknown_aliases):
+            logging.info(f"Unknown alias #{e}: {unknown}")
 
 
 
@@ -120,9 +123,18 @@ def main():
             raise ValueError("No dataset_info in README.md yaml block.")
 
         traces_configs = [c["config_name"] for c in metadata["dataset_info"]]
-        cot_configs_var = [c.replace("_", "-") for c in cot_configs]
-        unused_traces_configs = [c for c in traces_configs if c not in cot_configs+cot_configs_var]
-        missing_traces_configs = [c for c,cv in zip(cot_configs,cot_configs_var) if c not in traces_configs and cv not in traces_configs]
+        cot_configs_var = [
+            {"name": c["name"].replace("_", "-"), "path": c["path"]}
+            for c in cot_configs
+        ]
+        unused_traces_configs = [
+            c for c in traces_configs
+            if c not in [x["name"] for x in cot_configs+cot_configs_var]
+        ]
+        missing_traces_configs = [
+            c for c,cv in zip(cot_configs,cot_configs_var)
+            if c["name"] not in traces_configs and cv["name"] not in traces_configs
+        ]
 
         defects1 = [c for c in traces_configs if c not in traces_datadirs]
         if defects1:
@@ -164,15 +176,17 @@ def main():
                 metadata["configs"] = [c for c in metadata["configs"] if c["config_name"] != unused]
 
             if not all(
-                (c["config_name"] in cot_configs+cot_configs_var)
+                (c["config_name"] in [x["name"] for x in cot_configs+cot_configs_var])
                 for c in metadata["dataset_info"]
             ):
+                logging.error("Some traces have no corresponding records in results dataset.")
                 raise ValueError("Traces dataset is not consistent with results dataset. Aborting clean up. Dataset has not been changed.")
 
             if not all(
-                c in traces_configs or cv in traces_configs
+                c["name"] in traces_configs or cv["name"] in traces_configs
                 for c,cv in zip(cot_configs,cot_configs_var)
             ):
+                logging.error("Some records in results dataset have no corresponding traces.")
                 raise ValueError("Traces dataset is not consistent with results dataset. Aborting clean up. Dataset has not been changed.")
 
             #write readme to tmpfile
