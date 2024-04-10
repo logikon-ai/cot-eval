@@ -3,6 +3,10 @@ name: docker-ci
 on:
   workflow_dispatch:
 
+env:
+  VLLM_VERSION: 0.3.2
+  LM_EVAL_VERSION: v0.4.1
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -41,4 +45,5 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: logikon/cot-eval:latest
+          build-args: VLLM_VERSION=${{ env.VLLM_VERSION }},LM_EVAL_VERSION=${{ env.LM_EVAL_VERSION }}
+          tags: logikon/cot-eval:latest,logikon/cot-eval:vllm-${{ env.VLLM_VERSION }}_harness-${{ env.LM_EVAL_VERSION }}
