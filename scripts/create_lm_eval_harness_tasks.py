@@ -3,6 +3,7 @@ includes tasks with and without cot traces
 
 usage: 
 python scripts/create_lm_eval_harness_tasks.py \
+    --model user/model_id \
     --configs $configkeys \
     --output_dir eleuther/tasks/logikon \
     --keys_file ./lm_eval_harness_tasks.txt
@@ -20,6 +21,7 @@ logging.basicConfig(level=logging.INFO)
 
 def parse_eval_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--model", type=str, required=True)
     parser.add_argument("--configs", type=str, default=None)
     parser.add_argument("--configs_dir", type=str, default=None)
     parser.add_argument("--traces_dataset_path", type=str, default="cot-leaderboard/cot-eval-traces")
@@ -63,12 +65,15 @@ def main():
                 ):
                     continue
 
+                # where to find data in cot eval traces repo
+                data_file_path = os.path.join("data", args.model, f"{config['name']}-{task}.parquet")
+
                 harness_task = {
                     "task": f"{config['name']}_{task}_{subtype}",
                     "dataset_path": args.traces_dataset_path,
                     "dataset_kwargs": {
                         "data_files": {
-                            "test": f"{config['name']}-{task}/test-00000-of-00001.parquet"
+                            "test": data_file_path
                         },
                     },
                     "include": f"_logikon_{subtype}_template_yaml"                

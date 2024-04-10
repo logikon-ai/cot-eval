@@ -2,9 +2,12 @@ import os
 import random
 import logging
 import argparse
+import tempfile
 import time
 
-from datasets import load_dataset, load_dataset_builder, disable_caching, Dataset
+import huggingface_hub
+import pandas as pd
+from datasets import load_dataset, disable_caching, Dataset
 from langchain_core.runnables import Runnable
 from langchain_community.llms import VLLM
 
@@ -83,14 +86,14 @@ def run_chain_on_task(task_ds: Dataset, chain: Runnable) -> Dataset:
     task_ds = task_ds.map(add_reasoning, batched=True, batch_size=2048, load_from_cache_file=False)
     return task_ds
 
-
-def has_config(path: str, config_name: str, token: str) -> bool:
-    """helper to check if a config exists"""
-    try:
-        load_dataset_builder(path, name=config_name, token=token)
-        return True
-    except:  # noqa: E722
-        return False
+# FIXME: Remove this block
+# def has_config(path: str, config_name: str, token: str) -> bool:
+#     """helper to check if a config exists"""
+#     try:
+#         load_dataset_builder(path, name=config_name, token=token)
+#         return True
+#     except:  # noqa: E722
+#         return False
 
 
 def main():
@@ -116,11 +119,13 @@ def main():
         raise ValueError("No HF token specified")
 
     tasks = []
-    for task in config.tasks:
-        if not has_config(args.upload_dataset, f"{config.name}-{task}", token=hftoken):
-            tasks.append(task)
-        else:
-            logging.warning(f"Config {config.name}-{task} already exists. Will not generate reasoning traces for this config.")
+
+    # FIXME: Remove this block
+    # for task in config.tasks:
+    #     if not has_config(args.upload_dataset, f"{config.name}-{task}", token=hftoken):
+    #         tasks.append(task)
+    #     else:
+    #         logging.warning(f"Config {config.name}-{task} already exists. Will not generate reasoning traces for this config.")
 
 
     # Preprocess the task data
@@ -157,32 +162,45 @@ def main():
 
     # Upload reasoning traces
     logging.info("Uploading datasets with reasoning traces")
+    # Metadata
+    config_data = config.model_dump()
+    config_data.pop("description", None)
+    config_data = {**config_data, **config_data.pop("modelkwargs", {})}
+
     for task, ds in cot_data.items():
 
-        retrials_count = 0
-        while retrials_count < MAX_RETRIALS_PUSH_TO_HUB:
-            try:
-                ds.push_to_hub(
-                    repo_id=args.upload_dataset,
-                    config_name=f"{config.name}-{task}",
-                    split="test",
-                    commit_message=f"Add reasoning dataset for config {config.name} and task {task}",
-                    commit_description=config.to_yaml(),
-                    create_pr=args.create_pr,
-                    token=hftoken,
-                    private=True,
-                )
-                logging.info(f"Uploaded reasoning traces for {task}")
-                break
-            except Exception as e:
-                logging.error(f"Error uploading dataset for {task}: {e}")
-                retrials_count += 1
-                logging.info(f"Retrying in {RETRIALS_INTERVAL} seconds")
-                time.sleep(RETRIALS_INTERVAL)
+        with tempfile.TemporaryFile() as tmpfile:
 
-        if retrials_count == MAX_RETRIALS_PUSH_TO_HUB:
-            logging.error(f"Failed to upload dataset for {task}")
-            raise RuntimeError(f"Failed to upload dataset for {task}")
+            df = pd.DataFrame(ds)
+            df["config_data"] = config_data
+            df.to_parquet(tmpfile, index=False)
+
+            retrials_count = 0
+            while retrials_count < MAX_RETRIALS_PUSH_TO_HUB:
+                try:
+                    target_dir = os.path.join("data",*config.model.split("/", maxsplit=1))
+                    remote_path = os.path.join(target_dir,f"{config.name}-{task}.parquet")
+                    huggingface_hub.upload_file(
+                        path_or_fileobj=tmpfile,
+                        path_in_repo=remote_path,
+                        repo_id=args.upload_dataset,
+                        repo_type="dataset",
+                        commit_message=f"Add reasoning traces dataset for config {config.name} and task {task}",
+                        commit_description=config.to_yaml(),
+                        create_pr=args.create_pr,
+                        token=hftoken,
+                    )    
+                    logging.info(f"Uploaded reasoning traces for {task}")
+                    break
+                except Exception as e:
+                    logging.error(f"Error uploading dataset for {task}: {e}")
+                    retrials_count += 1
+                    logging.info(f"Retrying in {RETRIALS_INTERVAL} seconds")
+                    time.sleep(RETRIALS_INTERVAL)
+
+            if retrials_count == MAX_RETRIALS_PUSH_TO_HUB:
+                logging.error(f"Failed to upload dataset for {task}")
+                raise RuntimeError(f"Failed to upload dataset for {task}")
 
 
 

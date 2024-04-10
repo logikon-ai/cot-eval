@@ -60,6 +60,9 @@ def parse_readme(readme_path: str):
 
 def main():
 
+    logging.info("This script is deprectaed and will be removed in future versions.")
+    return
+
     args = parse_eval_args()
 
 

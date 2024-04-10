@@ -113,6 +113,7 @@ done
 # a 'harness task' defines how to evaluate a given model on a given task,
 # specifically whether to include the model's reasoning traces or not
 python scripts/create_lm_eval_harness_tasks.py \
+    --model $model \
     --configs $configkeys \
     --output_dir $LOTMP_ELEU_CONFIGSFOLDER \
     --configs_dir $LOTMP_CONFIGSFOLDER \
