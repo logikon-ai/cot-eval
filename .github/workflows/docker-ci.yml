@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  VLLM_VERSION: 0.3.2
+  VLLM_VERSION: 0.4.0.post1
   LM_EVAL_VERSION: v0.4.1
 
 jobs:
