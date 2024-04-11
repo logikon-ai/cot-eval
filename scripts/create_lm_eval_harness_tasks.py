@@ -24,7 +24,7 @@ def parse_eval_args() -> argparse.Namespace:
     parser.add_argument("--model", type=str, required=True)
     parser.add_argument("--configs", type=str, default=None)
     parser.add_argument("--configs_dir", type=str, default=None)
-    parser.add_argument("--traces_dataset_path", type=str, default="cot-leaderboard/cot-eval-traces")
+    parser.add_argument("--traces_dataset_path", type=str, default="cot-leaderboard/cot-eval-traces-2.0")
     parser.add_argument("--output_dir", type=str, default=None)
     parser.add_argument("--keys_file", type=str, default=None)
     return parser.parse_args()

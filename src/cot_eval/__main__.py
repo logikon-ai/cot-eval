@@ -31,7 +31,7 @@ RETRIALS_INTERVAL = 30
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--config", default=None, help="Name of config to use")
-    parser.add_argument("--upload_dataset", default="cot-leaderboard/cot-eval-traces", help="Dataset path to upload to")
+    parser.add_argument("--upload_dataset", default="cot-leaderboard/cot-eval-traces-2.0", help="Dataset path to upload to")
     parser.add_argument("--create_pr", type=bool, default=False, help="Whether to create pull requests when uploading")
     parser.add_argument("--hftoken", default=None, help="HF Token to use for upload")
     parser.add_argument("--answer_shuffle_seed", type=int, default=42, help="Seed for random shuffling of answers")
