@@ -137,13 +137,13 @@ def main():
     chain = CHAIN_REGISTRY[config.cot_chain].build(llm)
 
     ## Test run COT chain
-    #logging.info("Testing COT chain")
-    #test_input = [
-    #    {"passage": "This is a test passage", "question_options": "This is a test question"},
-    #    {"passage": "This is a further test passage", "question_options": "This is a test question"},
-    #]
-    #test_traces = chain.batch(test_input)
-    #logging.info(f"Tested COT chain: {test_traces}")
+    logging.info("Testing COT chain")
+    test_input = [
+        {"passage": "Peter fell from a tree.", "question_options": "Is Peter injured?"},
+        {"passage": "Peter likes math.", "question_options": "Does Peter like Punk?"},
+    ]
+    test_traces = chain.batch(test_input)
+    logging.info(f"Tested COT chain: {test_traces}")
 
     # Run COT chain on tasks
     cot_data: dict[str, Dataset] = {}
@@ -158,6 +158,7 @@ def main():
     config_data = config.model_dump()
     config_data.pop("description", None)
     config_data = {**config_data, **config_data.pop("modelkwargs", {})}
+    logging.info(f"Adding config_data: {config.name}")
 
     for task, ds in cot_data.items():
 
