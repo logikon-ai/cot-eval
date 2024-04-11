@@ -118,15 +118,7 @@ def main():
     if hftoken is None:
         raise ValueError("No HF token specified")
 
-    tasks = []
-
-    # FIXME: Remove this block
-    # for task in config.tasks:
-    #     if not has_config(args.upload_dataset, f"{config.name}-{task}", token=hftoken):
-    #         tasks.append(task)
-    #     else:
-    #         logging.warning(f"Config {config.name}-{task} already exists. Will not generate reasoning traces for this config.")
-
+    tasks = [t for t in config.tasks]
 
     # Preprocess the task data
     task_data = {}
