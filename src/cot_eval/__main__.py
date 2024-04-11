@@ -156,7 +156,10 @@ def main():
     logging.info("Uploading datasets with reasoning traces")
     # Metadata
     config_data = config.model_dump(exclude=["description"])
-    config_data = {**config_data, **config_data.pop("modelkwargs", {})}
+    model_kwargs = config_data.pop("modelkwargs", {})
+    vllm_kwargs = model_kwargs.pop("vllm_kwargs", {})
+    config_data = {**config_data, **model_kwargs, **vllm_kwargs}
+    config_data = {k: str(v) for k, v in config_data.items()}
     logging.info(f"Adding config_data: {config_data}")
 
     for task, ds in cot_data.items():
