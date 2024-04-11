@@ -164,7 +164,7 @@ def main():
         with tempfile.TemporaryFile() as tmpfile:
 
             df = pd.DataFrame(ds)
-            df["config_data"] = config_data
+            df["config_data"] = list(config_data.items())
             df.to_parquet(tmpfile, index=False)
 
             retrials_count = 0
