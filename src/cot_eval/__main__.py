@@ -27,6 +27,25 @@ disable_caching()
 MAX_RETRIALS_PUSH_TO_HUB = 5
 RETRIALS_INTERVAL = 30
 
+COT_CONFIG_KEYS = [
+    "name",
+    "model",
+    "dtype",
+    "tensor_parallel_size",
+    "max_new_tokens",
+    "cot_chain",
+    "n",
+    "best_of",
+    "use_beam_search",
+    "temperature",
+    "top_p",
+    "top_k",
+    "gpu_memory_utilization",
+    "max_model_len",
+    "revision",
+    "swap_space",
+]
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
@@ -159,7 +178,7 @@ def main():
     model_kwargs = config_data.pop("modelkwargs", {})
     vllm_kwargs = model_kwargs.pop("vllm_kwargs", {})
     config_data = {**config_data, **model_kwargs, **vllm_kwargs}
-    config_data = {k: str(v) for k, v in config_data.items()}
+    config_data = {k: str(v) for k, v in config_data.items() if k in COT_CONFIG_KEYS}
     logging.info(f"Adding config_data: {config_data}")
 
     for task, ds in cot_data.items():
