@@ -136,7 +136,7 @@ def main():
     logging.info(f"Building COT chain {config.cot_chain}")
     chain = CHAIN_REGISTRY[config.cot_chain].build(llm)
 
-    ## Test run COT chain
+    ## Test-run COT chain
     logging.info("Testing COT chain")
     test_input = [
         {"passage": "Peter fell from a tree.", "question_options": "Is Peter injured?"},
@@ -150,22 +150,21 @@ def main():
     for task in tasks:
         logging.info(f"Running COT chain {config.cot_chain} on {task}")
         cot_data[task] = run_chain_on_task(task_data[task], chain)
-        logging.info(f"Created reasoning traces for {task}")
+        logging.info(f"Created reasoning traces for {task}: {cot_data[task]['reasoning_trace'][:2]} ...")
 
     # Upload reasoning traces
     logging.info("Uploading datasets with reasoning traces")
     # Metadata
-    config_data = config.model_dump()
-    config_data.pop("description", None)
+    config_data = config.model_dump(exclude=["description"])
     config_data = {**config_data, **config_data.pop("modelkwargs", {})}
-    logging.info(f"Adding config_data: {config.name}")
+    logging.info(f"Adding config_data: {config_data}")
 
     for task, ds in cot_data.items():
 
         with tempfile.TemporaryFile() as tmpfile:
 
             df = pd.DataFrame(ds)
-            df["config_data"] = list(config_data.items())
+            df["config_data"] = len(df) * [list(config_data.items())]
             df.to_parquet(tmpfile, index=False)
 
             retrials_count = 0
