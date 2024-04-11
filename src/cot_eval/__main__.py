@@ -165,6 +165,7 @@ def main():
 
             df = pd.DataFrame(ds)
             df["config_data"] = len(df) * [list(config_data.items())]
+            logging.info(f"Created dataframe with reasoning traces for upload:\n{df.head(3)}")
             df.to_parquet(tmpfile, index=False)
 
             retrials_count = 0
