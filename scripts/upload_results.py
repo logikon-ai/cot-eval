@@ -31,8 +31,6 @@ API = HfApi(token=TOKEN)
 REQUESTS_REPO = "cot-leaderboard/cot-leaderboard-requests"
 LEADERBOARD_RESULTS_REPO = "cot-leaderboard/cot-leaderboard-results"
 RESULTS_REPO = "cot-leaderboard/cot-eval-results"
-LOCAL_DIR = "./TMP/cot-leaderboard-requests"
-LOCAL_DIR2 = "./TMP/cot-eval-results"
 
 
 @dataclass
@@ -72,6 +70,7 @@ def parse_eval_args() -> argparse.Namespace:
     parser.add_argument("--tasks", type=str, default=None)
     parser.add_argument("--timestamp", type=str, default=None)
     parser.add_argument("--output_dir", type=str, default=None)
+    parser.add_argument("--tmp_dir", type=str, default="./TMP")
     parser.add_argument("--requests_repo", type=str, default=REQUESTS_REPO)
     parser.add_argument("--results_repo", type=str, default=RESULTS_REPO)
     parser.add_argument("--leaderboard_results_repo", type=str, default=LEADERBOARD_RESULTS_REPO)
@@ -213,6 +212,10 @@ def main():
     if not os.path.isdir(args.output_dir):
         raise ValueError("output_dir must be a directory")
 
+    cache_dir_requests = os.path.join(args.tmp_dir, "cot-leaderboard-requests")
+    cache_dir_results = os.path.join(args.tmp_dir, "cot-eval-results")
+
+
     tasks = args.tasks.split(",")
     if len(tasks) == 0:
         raise ValueError("No tasks specified")
@@ -221,7 +224,7 @@ def main():
     snapshot_download(
         repo_id=args.results_repo,
         revision="main",
-        local_dir=LOCAL_DIR2,
+        local_dir=cache_dir_results,
         repo_type="dataset",
         etag_timeout=30,
         max_workers=60,
@@ -238,7 +241,7 @@ def main():
             repo_type="dataset",
         ):
             # copy file to local dir
-            dest_fpath=f"{LOCAL_DIR2}/{path_in_repo}"
+            dest_fpath=f"{cache_dir_results}/{path_in_repo}"
             os.makedirs(os.path.dirname(dest_fpath), exist_ok=True)
             shutil.copy(json_filepath, dest_fpath)
             # upload file to hub
@@ -253,7 +256,7 @@ def main():
 
 
     # update leaderboard
-    leaderboard_record = get_leaderboard_record(args.model, args.revision, tasks, args.precision, LOCAL_DIR2)
+    leaderboard_record = get_leaderboard_record(args.model, args.revision, tasks, args.precision, cache_dir_results)
     with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as fp:
         json.dump(leaderboard_record, fp, indent=4)
         fp.flush()
@@ -269,11 +272,11 @@ def main():
 
 
     # update eval request status to FINISHED
-    eval_requests = get_eval_requests("RUNNING", LOCAL_DIR, args.requests_repo)
+    eval_requests = get_eval_requests("RUNNING", cache_dir_requests, args.requests_repo)
     this_eval_request = next((e for e in eval_requests if e.model == args.model), None)
     if this_eval_request is not None:
         # set status to finished
-        set_eval_request(this_eval_request, "FINISHED", args.requests_repo, LOCAL_DIR, args.create_pr)
+        set_eval_request(this_eval_request, "FINISHED", args.requests_repo, cache_dir_requests, args.create_pr)
         logging.info(f"Updated status of eval request for model {args.model} to FINISHED.")
     else:
         logging.warning(f"No running evaluation requests found for model {args.model}.")

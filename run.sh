@@ -36,8 +36,10 @@ LOTMP_CONFIGSFOLDER="$COTEVAL_CACHE_DIR/cot_eval_configs"  # folder with cot-eva
 LOTMP_ELEU_CONFIGSFOLDER="$COTEVAL_CACHE_DIR/eleuther/tasks/logikon"  # folder with lm-eval-harness tasks
 LOTMP_ELEU_CONFIGSINFO="$COTEVAL_CACHE_DIR/lm_eval_harness_tasks.json"  # groups names of lm-eval-harness tasks that will be used
 LOTMP_ELEU_OUTPUTDIR="$COTEVAL_CACHE_DIR/eleuther/output"  # folder with lm-eval-harness output
+LOTMP_DEFAULT="$COTEVAL_CACHE_DIR/TMP"  # folder with other temporary files
 
 # cp pre-built eleuther tasks and templates to cache dir
+mkdir -p $LOTMP_DEFAULT
 mkdir -p $LOTMP_ELEU_CONFIGSFOLDER
 cp -r ./eleuther/tasks/logikon/* $LOTMP_ELEU_CONFIGSFOLDER
 
@@ -51,7 +53,7 @@ huggingface-cli login --token $HUGGINGFACEHUB_API_TOKEN
 # lookup model to-be evaluated
 
 if [[ -z "${NEXT_MODEL_PATH}" ]]; then
-  python scripts/lookup_pending_model.py --keys_file $LOTMP_NEXTMODELINFO --max_params $MAX_MODEL_PARAMS --requests_repo $REQUESTS_REPO
+  python scripts/lookup_pending_model.py --keys_file $LOTMP_NEXTMODELINFO --max_params $MAX_MODEL_PARAMS --requests_repo $REQUESTS_REPO --tmp_dir $LOTMP_DEFAULT
   model=$(cat $LOTMP_NEXTMODELINFO | jq -r .model)
   revision=$(cat $LOTMP_NEXTMODELINFO | jq -r .revision)
   precision=$(cat $LOTMP_NEXTMODELINFO | jq -r .precision)
@@ -191,6 +193,7 @@ python scripts/upload_results.py \
     --tasks $TASKS \
     --timestamp $timestamp \
     --output_dir $LOTMP_ELEU_OUTPUTDIR \
+    --tmp_dir $LOTMP_DEFAULT \
     --results_repo $RESULTS_REPO \
     --requests_repo $REQUESTS_REPO \
     --leaderboard_results_repo $LEADERBOARD_RESULTS_REPO \
