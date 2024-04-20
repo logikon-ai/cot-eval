@@ -186,7 +186,7 @@ def main():
         with tempfile.TemporaryFile() as tmpfile:
 
             df = pd.DataFrame(ds)
-            df["config_data"] = len(df) * [list(config_data.items())+["task",task]]
+            df["config_data"] = len(df) * [list(config_data.items())+[("task",task)]]
             logging.info(f"Created dataframe with reasoning traces for upload:\n{df.head(3)}")
             df.to_parquet(tmpfile, index=False)
 
