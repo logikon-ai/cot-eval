@@ -5,6 +5,9 @@ on:
 
 env:
   VLLM_VERSION: 0.4.0.post1
+  # harness v4.2.0 does not work with vllm:
+  # https://github.com/EleutherAI/lm-evaluation-harness/issues/1600
+  # using main branch while waiting for new release
   LM_EVAL_VERSION: main
 
 jobs:
