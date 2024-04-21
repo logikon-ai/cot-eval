@@ -22,6 +22,9 @@ RUN cd lm-evaluation-harness && pip install -e ".[vllm]"
 RUN cd cot-eval && pip install -e .
 RUN pip install -U vllm==${VLLM_VERSION}
 
+# Install datasets 2.18.0, being used with lm-evaluation-harness
+RUN pip install datasets==2.18.0
+
 # reinstall flash-attn as torch might have gotten reinstalled above
 RUN pip uninstall -y flash-attn
 RUN pip install flash-attn --no-build-isolation
