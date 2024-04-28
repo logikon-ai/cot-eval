@@ -135,7 +135,7 @@ ENROOT_SQUASH_OPTIONS='-comp lz4 -noD' enroot import docker://logikon/cot-eval
 enroot start --rw logikon+cot-eval.sqsh
 ```
 
-### Slurm / Apptainer
+### With Slurm / Apptainer
 
 We're using the following slurm on booster:
 
