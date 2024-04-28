@@ -135,6 +135,39 @@ ENROOT_SQUASH_OPTIONS='-comp lz4 -noD' enroot import docker://logikon/cot-eval
 enroot start --rw logikon+cot-eval.sqsh
 ```
 
+### Slurm / Apptainer
+
+We're using the following slurm on booster:
+
+```bash
+#!/bin/bash -x
+#SBATCH --account=<PROJECT_ID>
+#SBATCH --nodes=1
+#SBATCH --ntasks=4
+#SBATCH --ntasks-per-node=4
+#SBATCH --output=gpu-out.%j
+#SBATCH --error=gpu-err.%j
+#SBATCH --time=12:00:00
+#SBATCH --partition=booster
+#SBATCH --gres=gpu:1
+
+jutil env activate -p <PROJECT_ID>
+
+# create tmp folder to bind with container
+mkdir -p $SCRATCH/$SLURM_JOB_ID
+
+apptainer run \
+  --nv \
+  --env HF_HOME=/mnt/cache/huggingface \
+  --env-file $PROJECT/config.env \
+  --no-mount home,cwd \
+  --bind $SCRATCH/$SLURM_JOB_ID:/mnt \
+  --containall \
+  $PROJECT/cot-eval.sif bash -c "mkdir /mnt/cache;mkdir /mnt/cache/huggingface;cd /workspace/cot-eval;bash run.sh"
+```
+
+
+
 
 ## Misc
 
