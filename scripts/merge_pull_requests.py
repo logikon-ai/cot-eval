@@ -17,7 +17,7 @@ def main():
     repo_id = f"cot-leaderboard/{repo_id}"
 
     pr_list = list(get_repo_discussions(repo_id=repo_id, discussion_type="pull_request", discussion_status="open", repo_type="dataset"))
-    print(f"Found {Fore.BLUE}{len(pr_list)} open pull requests{Fore.RESET} in {RESULTS_REPO}")
+    print(f"Found {Fore.BLUE}{len(pr_list)} open pull requests{Fore.RESET} in {repo_id}")
     for pr in pr_list:
         print(f"PR: {pr.title}")
 
