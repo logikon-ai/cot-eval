@@ -28,6 +28,7 @@ dependencies = [
   "faker",
   "hf_transfer",
   "langchain",
+  "langchain_community",
   "pydantic",
   "pyyaml",
   "datasets",
