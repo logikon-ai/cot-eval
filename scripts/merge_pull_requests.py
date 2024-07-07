@@ -2,8 +2,8 @@
 
 
 import click
-from colorama import Fore
-from huggingface_hub import HfApi, get_repo_discussions
+from colorama import Fore  # type: ignore
+from huggingface_hub import HfApi, get_repo_discussions  # type: ignore
 
 RESULTS_REPO = "cot-eval-results"
 LB_RESULTS_REPO = "cot-leaderboard-results"
