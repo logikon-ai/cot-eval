@@ -136,7 +136,7 @@ if [ "$DO_BASEEVAL" = true ] ; then
     arrTASKS=(${TASKS//,/ })
     basetasks=$(printf "%s_base," "${arrTASKS[@]}")
     basetasks=${basetasks:0:-1}
-    output_path=$LOTMP_ELEU_OUTPUTDIR/${model}/orig/results_${timestamp}.json
+    output_path=$LOTMP_ELEU_OUTPUTDIR/${model}/orig/results_${timestamp}
     if [ -f $output_path ]; then
         echo "Outputfile $FILE exists. Skipping eval of $basetasks."
     else
@@ -161,7 +161,7 @@ lm-eval --model vllm \
     --tasks ${harness_tasks_base} \
     --num_fewshot 0 \
     --batch_size auto \
-    --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/base/${timestamp}.json \
+    --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/base/${timestamp} \
     --include_path $LOTMP_ELEU_CONFIGSFOLDER
 
 # with reasoning traces
@@ -180,7 +180,7 @@ do
         --tasks ${ht_batch_s} \
         --num_fewshot 0 \
         --batch_size auto \
-        --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/cot/${timestamp}_idx${i}.json \
+        --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/cot/${timestamp}_idx${i} \
         --include_path $LOTMP_ELEU_CONFIGSFOLDER
 done
 

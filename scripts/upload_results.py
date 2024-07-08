@@ -10,6 +10,7 @@ python scripts/upload_results.py \
 
 """
 
+from pathlib import Path
 from typing import Optional
 
 import glob
@@ -141,7 +142,7 @@ def get_leaderboard_record(
 
     raw_results = {"base": [], "cot": []}
     for subfolder in raw_results.keys():
-        result_files = glob.glob(f"{local_dir_results_dataset}/data/{model}/{subfolder}/**/*.json", recursive=True)
+        result_files = glob.glob(f"{local_dir_results_dataset}/data/{model}/{subfolder}/**/results*.json", recursive=True)
         for json_filepath in result_files:
             with open(json_filepath) as fp:
                 data = json.load(fp)
@@ -232,7 +233,11 @@ def main():
     )
 
     # copy/upload all new results for this model to raw results repo
-    result_files = glob.glob(f"{args.output_dir}/{args.model}/**/*.json", recursive=True)
+    result_files = glob.glob(f"{args.output_dir}/{args.model}/**/results*.json", recursive=True)
+    logging.info(f"Found {len(result_files)} result files for model {args.model}: {result_files}")
+    log_first_results = Path(result_files[0]).read_text()
+    logging.info(f"Content if first result file:\n{log_first_results}")
+
     for json_filepath in result_files:
         path_in_repo = json_filepath.replace(f"{args.output_dir}", "data")
         if not API.file_exists(
