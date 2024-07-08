@@ -113,7 +113,7 @@ def get_eval_requests(job_status: list, local_dir: str, hf_repo: str) -> list[Ev
         revision="main",
         local_dir=local_dir,
         repo_type="dataset",
-        etag_timeout=30,        
+        etag_timeout=300,        
         max_workers=60,
         token=TOKEN,
     )
@@ -227,7 +227,7 @@ def main():
         revision="main",
         local_dir=cache_dir_results,
         repo_type="dataset",
-        etag_timeout=30,
+        etag_timeout=300,
         max_workers=60,
         token=TOKEN
     )
