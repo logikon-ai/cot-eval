@@ -4,6 +4,7 @@ LABEL maintainer "Gregor Betz and the Logikon AI Team"
 
 ARG VLLM_VERSION=0.3.2
 ARG LM_EVAL_VERSION=v0.4.1
+ARG FLASHINFER_VERSION=v0.1.3
 
 ENV APP_HOME . 
 WORKDIR $APP_HOME
@@ -12,6 +13,7 @@ WORKDIR $APP_HOME
 
 RUN git clone  https://github.com/logikon-ai/cot-eval.git
 RUN git clone --branch ${LM_EVAL_VERSION} https://github.com/EleutherAI/lm-evaluation-harness.git
+RUN git clone --branch ${FLASHINFER_VERSION} https://github.com/flashinfer-ai/flashinfer.git --recursive
 
 # Install python packages
 
@@ -25,9 +27,12 @@ RUN pip install -U vllm==${VLLM_VERSION}
 # Install datasets 2.18.0, being used with lm-evaluation-harness
 RUN pip install datasets>=2.18.0
 
-# reinstall flash-attn as torch might have gotten reinstalled above
+# Reinstall flash-attn as torch might have gotten reinstalled above
 RUN pip uninstall -y flash-attn
 RUN pip install flash-attn --no-build-isolation
+
+# Install flashinfer backend
+RUN cd flashinfer/python && pip install -e .
 
 # Run cot-eval script on startup
 
