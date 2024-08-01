@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/pytorch:23.10-py3
+FROM nvcr.io/nvidia/pytorch:24.05-py3
 
 LABEL maintainer "Gregor Betz and the Logikon AI Team"
 
@@ -30,7 +30,7 @@ RUN pip uninstall -y flash-attn
 RUN pip install flash-attn --no-build-isolation
 
 # Install flashinfer backend
-RUN pip install flashinfer -i https://flashinfer.ai/whl/cu121/torch2.3
+RUN pip install flashinfer -i https://flashinfer.ai/whl/cu124/torch2.4
 
 # Run cot-eval script on startup
 
