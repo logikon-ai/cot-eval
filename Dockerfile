@@ -16,7 +16,7 @@ RUN git clone --branch ${LM_EVAL_VERSION} https://github.com/EleutherAI/lm-evalu
 # Install python packages
 
 RUN pip install --upgrade pip
-RUN pip uninstall transformer-engine -y
+#RUN pip uninstall transformer-engine -y
 
 RUN cd lm-evaluation-harness && pip install -e .
 RUN cd cot-eval && pip install -e .
