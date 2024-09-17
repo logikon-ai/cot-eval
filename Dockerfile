@@ -25,6 +25,10 @@ RUN pip install -U vllm==${VLLM_VERSION}
 # Install datasets 2.18.0, being used with lm-evaluation-harness
 RUN pip install datasets>=2.18.0
 
+# Uninstall pynvml and install nvidia-ml-py instead
+RUN pip uninstall -y pynvml
+RUN pip install nvidia-ml-py
+
 # Reinstall flash-attn as torch might have gotten reinstalled above
 RUN pip uninstall -y flash-attn
 RUN pip install flash-attn --no-build-isolation
