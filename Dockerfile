@@ -30,7 +30,7 @@ RUN pip uninstall -y flash-attn
 RUN pip install flash-attn --no-build-isolation
 
 # Install flashinfer backend
-RUN pip install  https://github.com/flashinfer-ai/flashinfer/releases/download/v0.1.3/flashinfer-0.1.3+cu121torch2.3-cp310-cp310-linux_x86_64.whl
+RUN pip install flashinfer -i https://flashinfer.ai/whl/cu124/torch2.4
 # Run cot-eval script on startup
 
 WORKDIR ${APP_HOME}/cot-eval
