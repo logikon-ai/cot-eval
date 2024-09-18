@@ -20,7 +20,7 @@ RUN pip uninstall transformer-engine -y
 
 RUN cd lm-evaluation-harness && pip install -e .
 RUN cd cot-eval && pip install -e .
-RUN pip install -U vllm==${VLLM_VERSION}
+RUN pip install -U vllm==${VLLM_VERSION} mistral-common==1.4.0
 
 # Install datasets 2.18.0, being used with lm-evaluation-harness
 RUN pip install datasets>=2.18.0
