@@ -27,11 +27,12 @@ classifiers = [
 dependencies = [
   "faker",
   "hf_transfer",
-  "langchain",
-  "langchain_community",
+  "langchain>=0.3,<0.4",
+  "langchain_openai>=0.2,<0.3",
   "pydantic",
   "pyyaml",
   "datasets",
+  "python-dotenv",
 ]
 
 # required to include yaml files in pip installation
@@ -41,7 +42,6 @@ lm_eval = ["**/*.yaml", "configs/**/*"]
 [project.optional-dependencies]
 cuda = [
   "vllm",
-  "python-dotenv",
 ]
 
 [project.scripts]
@@ -81,7 +81,6 @@ python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 [tool.hatch.envs.cuda]
 dependencies = [
   "vllm",
-  "python-dotenv",
 ]
 
 [tool.hatch.envs.types]
