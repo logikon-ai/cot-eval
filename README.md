@@ -53,9 +53,25 @@ The pipeline is as follows:
 ## Installation
 
 ```console
-git clone https://github.com/logikon-ai/cot-eval.git
-cd cot-eval
-pip install -e ".[cuda]"
+export LM_EVAL_VERSION="v0.4.4"
+
+git clone --branch API https://github.com/logikon-ai/cot-eval.git
+git clone --branch ${LM_EVAL_VERSION} https://github.com/EleutherAI/lm-evaluation-harness.git
+
+alias python=python3.11
+
+python -m venv .venv-cot-eval
+
+source .venv-cot-eval/bin/activate
+
+python -m pip install --upgrade pip
+
+cd lm-evaluation-harness && python -m pip install -e . && cd ..
+cd cot-eval && python -m pip install -e . && cd ..
+
+deactivate
+
+unalias python
 ```
 
 
@@ -65,123 +81,14 @@ pip install -e ".[cuda]"
 >
 > Use a personal HUGGINGFACEHUB_API_TOKEN. Note that you have to be a member of the [Open CoT Leaderboard](https://huggingface.co/cot-leaderboard) for this to work.
 
-See `run.sh` for an implementation of the pipeline.
+See `run_api.sh` for an implementation of the pipeline.
 
 ```console
+
+bash run_api.sh
+
 cot-eval --help
 ```
-
-
-### With Docker 🐳
-
-Step 1. Clone `cot-eval` repo.
-
-```bash
-git clone https://github.com/logikon-ai/cot-eval.git
-cd cot-eval
-```
-
-Step 2. Pull docker image
-```bash
-docker pull logikon/cot-eval:latest
-```
-
-Step 2a. (Alternatively:) Build docker image locally (allows you to adapt build args, e.g. VLLM_VERSION)
-```bash
-docker build --no-cache -t cot-eval --build-arg="VLLM_VERSION=0.3.0" . # change vllm version if necessary
-```
-
-Step 3. Set parameters and arguments
-```bash
-vim config.env  # adapt config.env, set especially NEXT_MODEL_PATH="..." and HUGGINGFACEHUB_API_TOKEN="..."
-```
-
-Step 4. Run docker container
-```bash
-cat config.env  # check
-docker run -it --rm --gpus all --ipc=host --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 --env-file config.env logikon/cot-eval:latest
-```
-
-
-### With Enroot
-
-```bash
-# export TMPDIR=...
-cd $TMPDIR
-
-git clone https://github.com/logikon-ai/cot-eval.git
-# edit config
-vim cot-eval/config.env
-
-export ENROOT_DATA_PATH=$TMPDIR/enroot-data
-mkdir $ENROOT_DATA_PATH
-export ENROOT_CONFIG_PATH=$TMPDIR/enroot-config
-mkdir $ENROOT_CONFIG_PATH
-touch $ENROOT_CONFIG_PATH/enroot.config
-mkdir $ENROOT_CONFIG_PATH/environ.d
-cp cot-eval/config.env $ENROOT_CONFIG_PATH/environ.d
-
-enroot import docker://logikon/cot-eval
-enroot create --name cot-eval logikon+cot-eval.sqsh
-rm logikon+cot-eval.sqsh
-
-enroot start --rw cot-eval
-```
-
-Alternatively:
-
-```bash
-ENROOT_SQUASH_OPTIONS='-comp lz4 -noD' enroot import docker://logikon/cot-eval
-enroot start --rw logikon+cot-eval.sqsh
-```
-
-### With Slurm / Apptainer
-
-We're using the following slurm on booster:
-
-```bash
-#!/bin/bash -x
-#SBATCH --account=<PROJECT_ID>
-#SBATCH --nodes=1
-#SBATCH --ntasks=4
-#SBATCH --ntasks-per-node=4
-#SBATCH --output=gpu-out.%j
-#SBATCH --error=gpu-err.%j
-#SBATCH --time=12:00:00
-#SBATCH --partition=booster
-#SBATCH --gres=gpu:1
-
-jutil env activate -p <PROJECT_ID>
-
-# create tmp folder to bind with container
-mkdir -p $SCRATCH/$SLURM_JOB_ID
-
-apptainer run \
-  --nv \
-  --env HF_HOME=/mnt/cache/huggingface \
-  --env-file $PROJECT/config.env \
-  --no-mount home,cwd \
-  --bind $SCRATCH/$SLURM_JOB_ID:/mnt \
-  --containall \
-  $PROJECT/cot-eval.sif bash -c "mkdir /mnt/cache;mkdir /mnt/cache/huggingface;cd /workspace/cot-eval;bash run.sh"
-```
-
-
-
-
-## Misc
-
-### Build and push Docker image
-
-```bash
-git clone https://github.com/logikon-ai/cot-eval.git
-cd cot-eval
-docker build --no-cache -t cot-eval . 
-docker login --username logikon
-docker tag cot-eval logikon/cot-eval:latest
-docker push logikon/cot-eval:latest
-```
-
 
 
 
