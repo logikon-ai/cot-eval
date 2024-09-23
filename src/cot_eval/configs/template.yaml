@@ -9,15 +9,7 @@ tasks:
   - lsat-lr
 model: mistralai/Mistral-7B-Instruct-v0.2
 modelkwargs:
-  best_of: 1 # Number of output sequences that are generated from the prompt.
-  dtype: auto # The data type for the model weights and activations.
-  max_new_tokens: 960 # Maximum number of tokens to generate per output sequence.
+  max_tokens: 960 # Maximum number of tokens to generate per output sequence.
   n: 1 # Number of output sequences to return for the given prompt.
   temperature: 1.0 # Float that controls the randomness of the sampling.
-  top_k: -1 # Integer that controls the number of top tokens to consider.
   top_p: 1.0 # Float that controls the cumulative probability of the top tokens to consider.
-  trust_remote_code: true # Trust remote code (e.g., from HuggingFace) when downloading the model and tokenizer.
-  use_beam_search: false # Whether to use beam search instead of sampling
-  vllm_kwargs:
-    gpu_memory_utilization: 0.9
-    seed: 42
