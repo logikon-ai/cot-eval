@@ -16,6 +16,10 @@ class COTEvalConfig(BaseModel):
     """Description of the COT evaluation config"""
     model: str
     """HF Repo with model weights and config"""
+    revision: Optional[str]
+    """Revision of the model"""
+    dtype: Optional[str]
+    """Precision of the model"""
     modelkwargs: Optional[dict]
     """model kwargs to passed to model init function"""
     tasks: list
@@ -41,4 +45,4 @@ class COTEvalConfig(BaseModel):
         Returns:
             str: YAML string
         """
-        return yaml.dump(self.dict())
+        return yaml.dump(self.model_dump())
