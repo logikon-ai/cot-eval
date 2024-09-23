@@ -5,15 +5,16 @@ import argparse
 import tempfile
 import time
 
-import huggingface_hub
-import pandas as pd
-from datasets import load_dataset, disable_caching, Dataset
+import huggingface_hub  # type: ignore
+import pandas as pd  # type: ignore
+from datasets import load_dataset, disable_caching, Dataset  # type: ignore
 from langchain_core.runnables import Runnable
-from langchain_community.llms import VLLM
+from langchain_openai import ChatOpenAI
 
 from cot_eval.COTEvalConfig import COTEvalConfig
 from cot_eval.chain_registry import CHAIN_REGISTRY
 from cot_eval.tasks_registry import TASKS_REGISTRY
+
 
 # Setup logging
 logging.basicConfig(
@@ -31,7 +32,6 @@ COT_CONFIG_KEYS = [
     "name",
     "model",
     "dtype",
-    "tensor_parallel_size",
     "max_new_tokens",
     "cot_chain",
     "n",
@@ -40,16 +40,25 @@ COT_CONFIG_KEYS = [
     "temperature",
     "top_p",
     "top_k",
-    "gpu_memory_utilization",
     "max_model_len",
     "revision",
-    "swap_space",
+]
+
+# Extra sampling parameters 
+# (see https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#extra-parameters)
+EXTRA_SAMPLING = [
+    "best_of",
+    "use_beam_search",
+    "top_k"
 ]
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--config", default=None, help="Name of config to use")
+    parser.add_argument("--base_url", default="localhost:8000", help="Base URL for inference server")
+    parser.add_argument("--batch_size", type=int, default=16, help="Batch size for inference server")
+    parser.add_argument("--inference_api_key", type=str, default="EMPTY", help="Inference API key")
     parser.add_argument("--upload_dataset", default="cot-leaderboard/cot-eval-traces-2.0", help="Dataset path to upload to")
     parser.add_argument("--create_pr", type=bool, default=False, help="Whether to create pull requests when uploading")
     parser.add_argument("--hftoken", default=None, help="HF Token to use for upload")
@@ -144,12 +153,31 @@ def main():
     for task in tasks:
         task_data[task] = load_and_preprocess(task, token=hftoken, answer_shuffle_seed=args.answer_shuffle_seed)
 
+    # Preprocess model kwargs
+    model_kwargs = config.modelkwargs.copy()
+    extra_body = {
+        k: model_kwargs.pop(k)
+        for k in EXTRA_SAMPLING
+        if k in model_kwargs
+    }
+
     # Load model
-    logging.info(f"Loading vLLM model {config.model}")
-    llm = VLLM(
-        model=config.model,
-        **config.modelkwargs,
+    logging.info(
+        f"Initializing ChatOpenAI model {config.model} "
+        f"from inference server with {model_kwargs} and "
+        f"extra_body: {extra_body}."
     )
+    llm = ChatOpenAI(
+        model=config.model,
+        base_url=args.base_url,
+        api_key=args.inference_api_key,
+        **model_kwargs,
+        extra_body=extra_body,
+        timeout=None,
+        max_retries=2,
+    )
+
+    # TODO: Check whether model is served as chat model (chat_template available)
 
     # Build COT chain
     logging.info(f"Building COT chain {config.cot_chain}")
@@ -165,7 +193,7 @@ def main():
     logging.info(f"Tested COT chain: {test_traces}")
 
     # Run COT chain on tasks
-    cot_data: dict[str, Dataset] = {}
+    cot_data: dict[str, Dataset] = {}  # type: ignore
     for task in tasks:
         logging.info(f"Running COT chain {config.cot_chain} on {task}")
         cot_data[task] = run_chain_on_task(task_data[task], chain)
@@ -174,10 +202,8 @@ def main():
     # Upload reasoning traces
     logging.info("Uploading datasets with reasoning traces")
     # Metadata
-    config_data = config.model_dump(exclude=["description"])
-    model_kwargs = config_data.pop("modelkwargs", {})
-    vllm_kwargs = model_kwargs.pop("vllm_kwargs", {})
-    config_data = {**config_data, **model_kwargs, **vllm_kwargs}
+    config_data = config.model_dump(exclude=["description", "modelkwargs"])
+    config_data = {**config_data, **model_kwargs, **extra_body}
     config_data = {k: str(v) for k, v in config_data.items() if k in COT_CONFIG_KEYS}
     logging.info(f"Adding config_data: {config_data}")
 
