@@ -31,6 +31,8 @@ def parse_eval_args() -> argparse.Namespace:
     parser.add_argument("--precision", type=str, default="auto")
     parser.add_argument("--chains", type=str, default=None)
     parser.add_argument("--model_kwargs", type=str, default=None)
+    parser.add_argument("--base_url", type=str, default=None, help="Inference server base url")
+    parser.add_argument("--batch_size", type=int, default=None, help="Inference api batch size")
     parser.add_argument("--num_gpus", type=int, default=1, help="Number of gpus to use")
     parser.add_argument("--gpu_memory_utilization", type=float, default=None, help="GPU memory utilization")
     parser.add_argument("--swap_space", type=int, default=4, help="Swap space to use")
@@ -40,7 +42,6 @@ def parse_eval_args() -> argparse.Namespace:
     parser.add_argument("--template_path", type=str, default=None)
     parser.add_argument("--keys_file", type=str, default=None)
     return parser.parse_args()
-
 
 def main():
 
@@ -97,8 +98,9 @@ def main():
                 if not os.path.exists(config_path):
                     break
             config["name"] = name
-
             config["model"] = args.model
+            config["revision"] = args.revision
+            config["dtype"] = args.precision
             config["cot_chain"] = chain
             config["tasks"] = tasks
             config["description"] = "Automatically created with create_cot_configs.py."
@@ -107,17 +109,6 @@ def main():
                 config["modelkwargs"] = {}
             for key, value in model_kwargs.items():
                 config["modelkwargs"][key] = value
-            config["modelkwargs"]["dtype"] = args.precision
-            config["modelkwargs"]["tensor_parallel_size"] = args.num_gpus
-
-            if "vllm_kwargs" not in config["modelkwargs"]:
-                config["modelkwargs"]["vllm_kwargs"] = {}
-            config["modelkwargs"]["vllm_kwargs"]["revision"] = args.revision
-            config["modelkwargs"]["vllm_kwargs"]["swap_space"] = args.swap_space
-            if args.max_model_len is not None:
-                config["modelkwargs"]["vllm_kwargs"]["max_model_len"] = args.max_model_len
-            if args.gpu_memory_utilization is not None:
-                config["modelkwargs"]["vllm_kwargs"]["gpu_memory_utilization"] = args.gpu_memory_utilization
 
             with open(config_path, "w") as fp:
                 yaml.dump(config, fp)
