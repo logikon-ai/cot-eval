@@ -62,6 +62,7 @@ dependencies = [
   "colorama",
   "pyyaml",
   "pytest",
+  "types-PyYAML",
 ]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
