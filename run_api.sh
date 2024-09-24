@@ -163,6 +163,7 @@ if [ "$DO_BASEEVAL" = true ] ; then
     else
         lm-eval --model local-completions \
             --model_args $lm_eval_model_args \
+            --tokenizer $model \
             --batch_size $batch_size \
             --tasks $basetasks \
             --num_fewshot 0 \
@@ -179,6 +180,7 @@ fi
 # without reasoning traces
 lm-eval --model local-completions \
     --model_args $lm_eval_model_args \
+    --tokenizer $model \
     --batch_size $batch_size \
     --tasks ${harness_tasks_base} \
     --num_fewshot 0 \
@@ -198,6 +200,7 @@ do
 
     lm-eval --model local-completions \
         --model_args $lm_eval_model_args \
+        --tokenizer $model \
         --batch_size $batch_size \
         --tasks ${ht_batch_s} \
         --num_fewshot 0 \
