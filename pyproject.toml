@@ -27,6 +27,7 @@ classifiers = [
 dependencies = [
   "faker",
   "hf_transfer",
+  "huggingface_hub"
   "langchain>=0.3,<0.4",
   "langchain_openai>=0.2,<0.3",
   "pydantic",
