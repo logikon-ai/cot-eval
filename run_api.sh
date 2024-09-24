@@ -85,7 +85,7 @@ else
 fi
 
 # set lm-eval-harness model_args
-lm_eval_model_args="base_url=http://${base_url}/completions,num_concurrent=1,max_retries=3,tokenized_requests=False,batch_size=${batch_size}"
+lm_eval_model_args="base_url=http://${base_url}/completions,num_concurrent=1,max_retries=3,tokenized_requests=False"
 
 echo "lm-eval model_args: $lm_eval_model_args"
 
@@ -156,6 +156,7 @@ if [ "$DO_BASEEVAL" = true ] ; then
     else
         lm-eval --model local-completions \
             --model_args $lm_eval_model_args \
+            --batch_size $batch_size \
             --tasks $basetasks \
             --num_fewshot 0 \
             --output_path $output_path \
@@ -171,6 +172,7 @@ fi
 # without reasoning traces
 lm-eval --model local-completions \
     --model_args $lm_eval_model_args \
+    --batch_size $batch_size \
     --tasks ${harness_tasks_base} \
     --num_fewshot 0 \
     --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/base/${timestamp} \
@@ -189,6 +191,7 @@ do
 
     lm-eval --model local-completions \
         --model_args $lm_eval_model_args \
+        --batch_size $batch_size \
         --tasks ${ht_batch_s} \
         --num_fewshot 0 \
         --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/cot/${timestamp}_idx${i} \
