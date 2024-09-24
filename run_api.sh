@@ -2,12 +2,12 @@
 
 set -a # automatically export all variables
 source config.env 
-source .venv-cot-eval/bin/activate
+# source .venv-cot-eval/bin/activate
 set +a
 
 set -e # exit on error
 
-alias python=python3.11
+# alias python=python3.11
 
 
 
@@ -219,5 +219,5 @@ python scripts/upload_results.py \
     --create_pr $CREATE_PULLREQUESTS
 
 
-deactivate
-unalias python
+# deactivate
+# unalias python
