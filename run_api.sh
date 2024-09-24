@@ -8,6 +8,7 @@ set +a
 set -e # exit on error
 
 # alias python=python3.11
+python --version
 
 
 
