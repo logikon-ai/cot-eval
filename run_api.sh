@@ -26,7 +26,10 @@ fi
 if [[ ${COT_EVAL_DEBUG} ]]; then
   TRACES_REPO="${TRACES_REPO_DEBUG}"
   CREATE_PULLREQUESTS="true"
+  LM_EVAL_VERBOSITY="DEBUG"
   echo "INFO: Debug mode enabled! Using debug traces repo: $TRACES_REPO. Creating pull requests."
+else 
+  LM_EVAL_VERBOSITY="INFO"
 fi
 
 if [[ -z "${INFERENCE_BASE_URL}" ]]; then
@@ -168,7 +171,8 @@ if [ "$DO_BASEEVAL" = true ] ; then
             --tasks $basetasks \
             --num_fewshot 0 \
             --output_path $output_path \
-            --include_path $LOTMP_ELEU_CONFIGSFOLDER
+            --include_path $LOTMP_ELEU_CONFIGSFOLDER \
+            --verbosity $LM_EVAL_VERBOSITY
     fi
 fi
 
@@ -185,7 +189,8 @@ lm-eval --model local-completions \
     --tasks ${harness_tasks_base} \
     --num_fewshot 0 \
     --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/base/${timestamp} \
-    --include_path $LOTMP_ELEU_CONFIGSFOLDER
+    --include_path $LOTMP_ELEU_CONFIGSFOLDER \
+    --verbosity $LM_EVAL_VERBOSITY
 
 # with reasoning traces
 arrHT=(${harness_tasks_cot//,/ })
@@ -205,7 +210,8 @@ do
         --tasks ${ht_batch_s} \
         --num_fewshot 0 \
         --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/cot/${timestamp}_idx${i} \
-        --include_path $LOTMP_ELEU_CONFIGSFOLDER
+        --include_path $LOTMP_ELEU_CONFIGSFOLDER \
+        --verbosity $LM_EVAL_VERBOSITY
 done
 
 ##############################
