@@ -108,7 +108,7 @@ python scripts/create_cot_configs.py $cot_config_extra_args \
     --tasks $TASKS \
     --output_dir $LOTMP_CONFIGSFOLDER \
     --template_path "./src/cot_eval/configs/template.yaml" \
-    --keys_file $LOTMP_CONFIGKEYSINFO \
+    --keys_file $LOTMP_CONFIGKEYSINFO
 configkeys=$(cat $LOTMP_CONFIGKEYSINFO)  # format is "config1,config2,config3"
 echo "Created configs: $configkeys and stored in $LOTMP_CONFIGSFOLDER"
 
