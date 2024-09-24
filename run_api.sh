@@ -158,7 +158,6 @@ if [ "$DO_BASEEVAL" = true ] ; then
             --model_args $lm_eval_model_args \
             --tasks $basetasks \
             --num_fewshot 0 \
-            --batch_size auto \
             --output_path $output_path \
             --include_path $LOTMP_ELEU_CONFIGSFOLDER
     fi
@@ -174,7 +173,6 @@ lm-eval --model local-completions \
     --model_args $lm_eval_model_args \
     --tasks ${harness_tasks_base} \
     --num_fewshot 0 \
-    --batch_size auto \
     --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/base/${timestamp} \
     --include_path $LOTMP_ELEU_CONFIGSFOLDER
 
@@ -193,7 +191,6 @@ do
         --model_args $lm_eval_model_args \
         --tasks ${ht_batch_s} \
         --num_fewshot 0 \
-        --batch_size auto \
         --output_path $LOTMP_ELEU_OUTPUTDIR/${model}/cot/${timestamp}_idx${i} \
         --include_path $LOTMP_ELEU_CONFIGSFOLDER
 done
