@@ -7,7 +7,13 @@ set +a
 
 set -e # exit on error
 
-# alias python=python3.11
+if [[ ${VENV_DIR} ]]; then
+  source "${VENV_DIR}/bin/activate"
+fi
+
+if [[ ${PYTHON_COMMAND} ]]; then
+  alias python="${PYTHON_COMMAND}"
+fi
 python --version
 
 
