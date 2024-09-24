@@ -18,6 +18,8 @@ fi
 
 if [[ ${COT_EVAL_DEBUG} ]]; then
   TRACES_REPO="${TRACES_REPO_DEBUG}"
+  CREATE_PULLREQUESTS="true"
+  echo "INFO: Debug mode enabled! Using debug traces repo: $TRACES_REPO. Creating pull requests."
 fi
 
 if [[ -z "${INFERENCE_BASE_URL}" ]]; then
