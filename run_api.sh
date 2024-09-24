@@ -92,7 +92,7 @@ else
 fi
 
 # set lm-eval-harness model_args
-lm_eval_model_args="base_url=http://${base_url}/completions,num_concurrent=1,max_retries=3,tokenized_requests=False"
+lm_eval_model_args="base_url=${base_url}/completions,num_concurrent=1,max_retries=3,tokenized_requests=False"
 
 echo "lm-eval model_args: $lm_eval_model_args"
 
