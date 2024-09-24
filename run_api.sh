@@ -16,16 +16,8 @@ if [[ -z "${HUGGINGFACEHUB_API_TOKEN}" ]]; then
   exit 1
 fi
 
-if [[ -z "${GPU_MEMORY_UTILIZATION}" ]]; then
-  gpu_memory_utilization=0.9
-else
-  gpu_memory_utilization=$GPU_MEMORY_UTILIZATION
-fi
-
-if [[ -z "${VLLM_SWAP_SPACE}" ]]; then
-  swap_space=4
-else
-  swap_space=$VLLM_SWAP_SPACE
+if [[ ${COT_EVAL_DEBUG} ]]; then
+  TRACES_REPO="${TRACES_REPO_DEBUG}"
 fi
 
 if [[ -z "${INFERENCE_BASE_URL}" ]]; then
@@ -125,7 +117,8 @@ do
         --batch_size $batch_size \
         --base_url $base_url \
         --upload_dataset $TRACES_REPO \
-        --hftoken $HUGGINGFACEHUB_API_TOKEN
+        --hftoken $HUGGINGFACEHUB_API_TOKEN \
+        --debug $COT_EVAL_DEBUG
 done
 
 

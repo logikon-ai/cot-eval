@@ -60,16 +60,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch_size", type=int, default=16, help="Batch size for inference server")
     parser.add_argument("--inference_api_key", type=str, default="EMPTY", help="Inference API key")
     parser.add_argument("--upload_dataset", default="cot-leaderboard/cot-eval-traces-2.0", help="Dataset path to upload to")
-    parser.add_argument("--create_pr", type=bool, default=False, help="Whether to create pull requests when uploading")
+    parser.add_argument("--create_pr", type=bool, default=False, help="Create pull requests when uploading")
     parser.add_argument("--hftoken", default=None, help="HF Token to use for upload")
+    parser.add_argument("--debug", type=bool, default=False, help="Run in debug mode)")
     parser.add_argument("--answer_shuffle_seed", type=int, default=42, help="Seed for random shuffling of answers")
     return parser.parse_args()
 
 
-def load_and_preprocess(task: str, token: str, answer_shuffle_seed: int) -> Dataset:
+def load_and_preprocess(task: str, token: str, answer_shuffle_seed: int, debug: bool) -> Dataset:
     """Load and preprocess the task dataset"""
     ds = load_dataset(**TASKS_REGISTRY[task], token=token)
     logging.info(f"Loaded {task} dataset with {len(ds)} examples")
+    
+    if debug:
+        ds = ds.select(range(16))
+        logging.info(f"DEBUG-MODE: Reduced {task} dataset to 16 examples")
 
     def permutate_options(example):
         """Permutate the options in the example"""
@@ -151,7 +156,12 @@ def main():
     # Preprocess the task data
     task_data = {}
     for task in tasks:
-        task_data[task] = load_and_preprocess(task, token=hftoken, answer_shuffle_seed=args.answer_shuffle_seed)
+        task_data[task] = load_and_preprocess(
+            task,
+            token=hftoken,
+            answer_shuffle_seed=args.answer_shuffle_seed,
+            debug=args.debug
+        )
 
     # Preprocess model kwargs
     model_kwargs = config.modelkwargs.copy()
