@@ -30,7 +30,7 @@ fi
 
 if [[ -z "${INFERENCE_BASE_URL}" ]]; then
   echo "No INFERENCE_BASE_URL specified in config, defaulting to localhost:8000."
-  base_url="localhost:8000"
+  base_url="http://localhost:8000/v1"
 else
   base_url="${INFERENCE_BASE_URL}"
 fi
@@ -91,7 +91,7 @@ else
 fi
 
 # set lm-eval-harness model_args
-lm_eval_model_args="base_url=http://${base_url}/v1/completions,num_concurrent=1,max_retries=3,tokenized_requests=False,batch_size=${batch_size}"
+lm_eval_model_args="base_url=http://${base_url}/completions,num_concurrent=1,max_retries=3,tokenized_requests=False,batch_size=${batch_size}"
 
 echo "lm-eval model_args: $lm_eval_model_args"
 

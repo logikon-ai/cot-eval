@@ -56,7 +56,7 @@ EXTRA_SAMPLING = [
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--config", default=None, help="Name of config to use")
-    parser.add_argument("--base_url", default="localhost:8000", help="Base URL for inference server")
+    parser.add_argument("--base_url", default="http://localhost:8000/v1", help="Base URL for inference server")
     parser.add_argument("--batch_size", type=int, default=16, help="Batch size for inference server")
     parser.add_argument("--inference_api_key", type=str, default="EMPTY", help="Inference API key")
     parser.add_argument("--upload_dataset", default="cot-leaderboard/cot-eval-traces-2.0", help="Dataset path to upload to")
