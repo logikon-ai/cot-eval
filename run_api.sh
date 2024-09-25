@@ -23,7 +23,7 @@ if [[ -z "${HUGGINGFACEHUB_API_TOKEN}" ]]; then
   exit 1
 fi
 
-if [[ ${COT_EVAL_DEBUG} ]]; then
+if ${COT_EVAL_DEBUG}; then
   TRACES_REPO="${TRACES_REPO_DEBUG}"
   CREATE_PULLREQUESTS="true"
   LM_EVAL_VERBOSITY="DEBUG"
