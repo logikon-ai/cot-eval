@@ -53,6 +53,15 @@ EXTRA_SAMPLING = [
 ]
 
 
+def str_to_bool(value):
+    if isinstance(value, bool):
+        return value
+    if value.lower() in {'false', 'f', '0', 'no', 'n'}:
+        return False
+    elif value.lower() in {'true', 't', '1', 'yes', 'y'}:
+        return True
+    raise argparse.ArgumentTypeError(f'Boolean value expected, but received {value}.')
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--config", default=None, help="Name of config to use")
@@ -61,7 +70,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--upload_dataset", default="cot-leaderboard/cot-eval-traces-2.0", help="Dataset path to upload to")
     parser.add_argument("--create_pr", type=bool, default=False, help="Create pull requests when uploading")
     parser.add_argument("--hftoken", default=None, help="HF Token to use for upload")
-    parser.add_argument("--debug", type=bool, default=False, help="Run in debug mode)")
+    parser.add_argument("--debug", type=str_to_bool, nargs='?', default=False, help="Run in debug mode)")
     parser.add_argument("--answer_shuffle_seed", type=int, default=42, help="Seed for random shuffling of answers")
     return parser.parse_args()
 
@@ -149,6 +158,9 @@ def main():
         hftoken = os.environ.get("HUGGINGFACEHUB_API_TOKEN", None)
     if hftoken is None:
         raise ValueError("No HF token specified")
+
+    if args.debug:
+        logging.info("Running cot-eval in DEBUG mode.")
 
     tasks = [t for t in config.tasks]
 
