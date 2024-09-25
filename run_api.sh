@@ -27,9 +27,11 @@ if [[ ${COT_EVAL_DEBUG} ]]; then
   TRACES_REPO="${TRACES_REPO_DEBUG}"
   CREATE_PULLREQUESTS="true"
   LM_EVAL_VERBOSITY="DEBUG"
+  LM_EVAL_LIMIT_ARG="--limit 10 "
   echo "INFO: Debug mode enabled! Using debug traces repo: $TRACES_REPO. Creating pull requests."
 else 
   LM_EVAL_VERBOSITY="INFO"
+  LM_EVAL_LIMIT_ARG=""
 fi
 
 if [[ -z "${INFERENCE_BASE_URL}" ]]; then
@@ -40,10 +42,10 @@ else
 fi
 
 if [[ -z "${INFERENCE_BATCH_SIZE}" ]]; then
-  echo "No INFERENCE_BATCH_SIZE specified in config, defaulting to 16."
-  batch_size="16"
+  batch_size="1"
 else
-  batch_size="${INFERENCE_BATCH_SIZE}"
+  echo "Warning: INFERENCE_BATCH_SIZE=${INFERENCE_BATCH_SIZE} from config will be ignored. Harness multiple choice tasks are evaluated with batch_size=1."
+  batch_size="1"
 fi
 
 # Local TMPPATHS to store intermediate files
@@ -126,7 +128,6 @@ for config in "${arr_configkeys[@]}"
 do
     cot-eval \
         --config "${LOTMP_CONFIGSFOLDER}/${config}.yaml" \
-        --batch_size $batch_size \
         --base_url $base_url \
         --upload_dataset $TRACES_REPO \
         --hftoken $HUGGINGFACEHUB_API_TOKEN \
@@ -164,7 +165,7 @@ if [ "$DO_BASEEVAL" = true ] ; then
     if [ -f $output_path ]; then
         echo "Outputfile $FILE exists. Skipping eval of $basetasks."
     else
-        lm-eval --model local-completions \
+        lm-eval --model local-completions ${LM_EVAL_LIMIT_ARG} \
             --model_args $lm_eval_model_args \
             --batch_size $batch_size \
             --tasks $basetasks \
