@@ -16,9 +16,6 @@ import os
 import yaml
 
 
-logging.basicConfig(level=logging.INFO)
-
-
 def parse_eval_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, required=True)
@@ -27,6 +24,7 @@ def parse_eval_args() -> argparse.Namespace:
     parser.add_argument("--traces_dataset_path", type=str, default="cot-leaderboard/cot-eval-traces-2.0")
     parser.add_argument("--output_dir", type=str, default=None)
     parser.add_argument("--keys_file", type=str, default=None)
+    parser.add_argument("--debug", type=bool, default=False, help="Run in debug mode)")
     return parser.parse_args()
 
 
@@ -45,7 +43,10 @@ def main():
     if not os.path.isdir(args.configs_dir):
         raise ValueError(f"configs_dir is not a directory: {args.configs_dir}")
 
+    logging.getLogger().setLevel(logging.DEBUG if args.debug else logging.INFO)
+
     configs = args.configs.split(",")
+    logging.getLogger().debug(f"Parsed configs: {configs}")
 
     created_harness_tasks_keys = {"base": [], "cot": []}
 
@@ -83,8 +84,10 @@ def main():
                 with open(harness_task_path, "w") as fp:
                     yaml.dump(harness_task, fp)
 
+                logging.getLogger().debug(f"Created harness config at {harness_task_path}: {harness_task}")
+
                 created_harness_tasks_keys[subtype].append(harness_task['task'])
- 
+
 
     logging.info(f"Created {sum(len(v) for _,v in created_harness_tasks_keys.items())} harness tasks.")
 
