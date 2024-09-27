@@ -58,10 +58,7 @@ export LM_EVAL_VERSION="v0.4.4"
 git clone --branch API https://github.com/logikon-ai/cot-eval.git
 git clone --branch ${LM_EVAL_VERSION} https://github.com/EleutherAI/lm-evaluation-harness.git
 
-alias python=python3.11
-
-python -m venv .venv-cot-eval
-
+python3.11 -m venv .venv-cot-eval
 source .venv-cot-eval/bin/activate
 
 python -m pip install --upgrade pip
@@ -69,9 +66,6 @@ python -m pip install --upgrade pip
 cd lm-evaluation-harness && python -m pip install -e . && cd ..
 cd cot-eval && python -m pip install -e . && cd ..
 
-deactivate
-
-unalias python
 ```
 
 
