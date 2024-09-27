@@ -78,10 +78,17 @@ cd cot-eval && python -m pip install -e . && cd ..
 See `run_api.sh` for an implementation of the pipeline.
 
 ```console
+# 1. Edit config.env
+
+...
+
+# 2. Spin-up openai compatible inference server (e.g., vLLM) that serves model to-be-evaluated
+
+...
+
+# 3. Run evaluation
 
 bash run_api.sh
-
-cot-eval --help
 ```
 
 
