@@ -10,7 +10,7 @@ class COTChain(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def build(cls, llm: ChatOpenAI) -> Runnable:
+    def build(cls, llm: ChatOpenAI, **kwargs) -> Runnable:
         """Build chain
 
         Returns:
