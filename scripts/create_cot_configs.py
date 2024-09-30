@@ -60,6 +60,8 @@ def main():
         raise ValueError("tasks must be specified")
     if args.output_dir is None:
         raise ValueError("output_dir must be specified")
+    if args.max_model_len is None:
+        raise ValueError("max_model_len must be specified")
     if not os.path.isdir(args.output_dir):
         logging.info("output_dir does not exist, creating it")
         os.makedirs(args.output_dir)
@@ -103,6 +105,7 @@ def main():
             config["dtype"] = args.precision
             config["cot_chain"] = chain
             config["tasks"] = tasks
+            config["max_model_len"] = args.max_model_len
             config["description"] = "Automatically created with create_cot_configs.py."
 
             if "modelkwargs" not in config:
