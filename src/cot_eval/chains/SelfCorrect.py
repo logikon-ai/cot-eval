@@ -96,12 +96,14 @@ class SelfCorrect(COTChain):
         (
             "user",
             (
-                "Thanks so much. We've received the following review of your solution from an expert:\n"
+                "We've received the following review of your solution from an expert:\n"
                 "<review>\n"
                 "{review}\n"
                 "</review>\n"
-                "Please improve (e.g., correct, streamline, or shorten) your solution! Take the feedback into "
-                "account as appropriate."
+                "Please improve (e.g., correct, streamline, or shorten) your solution. You may take the "
+                "feedback into account in doing so.\n"
+                "Important: Just provide your revised step-by-step solution below without any comments, "
+                "explanations, or references to the review."
             )
         )
     ]
