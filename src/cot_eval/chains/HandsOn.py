@@ -41,6 +41,6 @@ class HandsOn(COTChain):
     def build(cls, llm: ChatOpenAI, **kwargs) -> Runnable:
 
         prompt = ChatPromptTemplate.from_messages(cls.prompt_msgs)
-        chain = prompt | llm | StrOutputParser()
+        chain = prompt | llm | StrOutputParser() | cls.strip_ws
         return chain
 

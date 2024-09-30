@@ -121,18 +121,21 @@ class SelfCorrect(COTChain):
             ChatPromptTemplate.from_messages(cls.prompt_msgs_cot)
             | llm
             | StrOutputParser()
+            | cls.strip_ws
         )
 
         subchain_review = (
             ChatPromptTemplate.from_messages(cls.prompt_msgs_review)
             | llm
             | StrOutputParser()
+            | cls.strip_ws
         )
 
         subchain_revise = (
             ChatPromptTemplate.from_messages(cls.prompt_msgs_revise)
             | llm
             | StrOutputParser()
+            | cls.strip_ws
         )
 
         if max_model_len < cls._MIN_MODEL_LEN_FOR_REV:

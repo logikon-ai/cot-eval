@@ -56,6 +56,7 @@ class ReflectBeforeRun(COTChain):
             prompt
             | llm
             | StrOutputParser()
+            | cls.strip_ws
         )
         return chain
 
