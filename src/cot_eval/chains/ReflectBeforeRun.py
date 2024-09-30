@@ -1,3 +1,14 @@
+"""CoT chain with Ex Post Reflection / Planning.
+
+References
+----------
+
+.. [0] "Plan-and-Solve Prompting: Improving Zero-Shot Chain-of-Thought Reasoning by Large Language Models."
+       https://aclanthology.org/2023.acl-long.147.pdf
+.. [1] "Take a Step Back: Evoking Reasoning via Abstraction in Large Language Models."
+       https://arxiv.org/abs/2310.06117
+"""
+
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable
@@ -31,7 +42,7 @@ class ReflectBeforeRun(COTChain):
                 "* Sketch a plan for how to solve this problem.\n"
                 "* Solve the problem, carefully and step by step, following your "
                 "plan and avoiding the common mistakes.\n"
-                "Use the closing tag </reasoning> to indicate when you're done."
+                "Enclose your reasoning in '<reasoning></reasoning>' tags."
             )
         )
     ]

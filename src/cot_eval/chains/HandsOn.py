@@ -1,3 +1,13 @@
+"""Default CoT chain.
+
+References
+----------
+
+.. [0] "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models."
+       https://arxiv.org/abs/2201.11903
+"""
+
+
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable
