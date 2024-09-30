@@ -3,7 +3,7 @@
 References
 ----------
 
-.. [0] "Small Language Model Can Self-correct."
+.. [0] "Small Language Models Can Self-correct."
        https://arxiv.org/abs/2401.07301
 .. [1] "Towards Reasoning in Large Language Models via Multi-Agent Peer Review Collaboration."
        https://arxiv.org/abs/2311.08152
