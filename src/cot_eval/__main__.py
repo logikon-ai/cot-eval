@@ -202,7 +202,7 @@ def main():
 
     # Build COT chain
     logging.info(f"Building COT chain {config.cot_chain}")
-    chain = CHAIN_REGISTRY[config.cot_chain].build(llm)
+    chain = CHAIN_REGISTRY[config.cot_chain].build(llm, max_model_len=config.max_model_len)
 
     ## Test-run COT chain
     logging.info("Testing COT chain")
