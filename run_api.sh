@@ -90,7 +90,8 @@ echo "Model to evaluate: $model : $revision. Precision: $precision"
 
 # cot_config_extra_args
 if [[ -z "${MAX_LENGTH}" ]]; then
-  echo "No MAX_LENGTH specified in config."
+  echo "No MAX_LENGTH specified in config. But required for CoT chain routing!"
+  exit 1
   cot_config_extra_args=""
 else
   cot_config_extra_args="--max_model_len $MAX_LENGTH"
