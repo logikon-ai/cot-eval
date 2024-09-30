@@ -100,10 +100,11 @@ class SelfCorrect(COTChain):
                 "<review>\n"
                 "{review}\n"
                 "</review>\n"
-                "Please improve (e.g., correct, streamline, or shorten) your solution. You may take the "
-                "feedback into account in doing so.\n"
-                "Important: Just provide your revised step-by-step solution below without any comments, "
-                "explanations, or references to the review."
+                "Please improve (e.g., correct, or streamline) your solution and answer to "
+                "the question. You may take the reviewer's feedback into account in doing so, "
+                "if you think it is helpful.\n"
+                "Important: Just provide your revised step-by-step solution below without any "
+                "references to the original solution or the review."
             )
         )
     ]
