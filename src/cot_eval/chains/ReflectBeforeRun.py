@@ -33,7 +33,7 @@ class ReflectBeforeRun(COTChain):
                 "<question>\n"
                 "{question_options}\n"
                 "</question>\n"
-                "Take a deep breath -- and think carefully, step by step. "
+                "Take a deep breath -- and think carefully, step by step.\n"
                 "Remember: Sometimes it's useful to take a step back and "
                 "reflect on the problem. The following more specific instructions "
                 "may help you to do so:\n\n"
