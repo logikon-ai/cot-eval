@@ -20,6 +20,8 @@ class COTEvalConfig(BaseModel):
     """Revision of the model"""
     dtype: Optional[str]
     """Precision of the model"""
+    max_model_len: Optional[int]
+    """Maximum length of the model"""
     modelkwargs: Optional[dict]
     """model kwargs to passed to model init function"""
     tasks: list
