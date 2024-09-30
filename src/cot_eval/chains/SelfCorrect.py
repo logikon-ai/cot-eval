@@ -9,6 +9,8 @@ References
        https://arxiv.org/abs/2311.08152
 """
 
+import logging
+
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable, RunnablePassthrough
@@ -19,6 +21,8 @@ from cot_eval import COTChain
 
 class SelfCorrect(COTChain):
     """SelfCorrect COT chain builder based on langchain"""
+
+    _MIN_MODEL_LEN_FOR_REV = 4000  # Minimum model length for review & revision
 
     prompt_msgs_cot = [
         (
@@ -103,9 +107,13 @@ class SelfCorrect(COTChain):
     ]
 
 
-
     @classmethod
-    def build(cls, llm: ChatOpenAI) -> Runnable:
+    def build(cls, llm: ChatOpenAI, **kwargs) -> Runnable:
+
+        if "max_model_len" not in kwargs:
+            raise ValueError("max_model_len not provided.")
+        
+        max_model_len = kwargs["max_model_len"]
 
         subchain_cot = (
             ChatPromptTemplate.from_messages(cls.prompt_msgs_cot)
@@ -125,11 +133,18 @@ class SelfCorrect(COTChain):
             | StrOutputParser()
         )
 
-        main_chain = (
-            RunnablePassthrough.assign(solution=subchain_cot)
-            | RunnablePassthrough.assign(review=subchain_review)
-            | subchain_revise
-        )
+        if max_model_len < cls._MIN_MODEL_LEN_FOR_REV:
+            logging.warning(
+                f"Model length {max_model_len} too short for review & revision. "
+                f"Running SelfCorrect without review & revision."
+            )
+            main_chain = subchain_cot
+        else:   
+            main_chain = (
+                RunnablePassthrough.assign(solution=subchain_cot)
+                | RunnablePassthrough.assign(review=subchain_review)
+                | subchain_revise
+            )
 
         return main_chain
 
