@@ -13,7 +13,7 @@ import logging
 
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import Runnable, RunnableParallel, RunnablePassthrough  # noqa: F401
+from langchain_core.runnables import Runnable, RunnableParallel, RunnablePassthrough  # noqa: F401  # pickle complains without RunnableParallel
 from langchain_openai import ChatOpenAI
 
 from cot_eval import COTChain
