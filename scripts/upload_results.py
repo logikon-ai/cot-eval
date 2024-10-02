@@ -19,9 +19,10 @@ import os
 import shutil
 from dataclasses import dataclass
 import tempfile
+import time
 
 import argparse
-from huggingface_hub import HfApi, snapshot_download
+from huggingface_hub import HfApi, snapshot_download  # type: ignore
 
 import logging
 
@@ -32,6 +33,8 @@ API = HfApi(token=TOKEN)
 REQUESTS_REPO = "cot-leaderboard/cot-leaderboard-requests"
 LEADERBOARD_RESULTS_REPO = "cot-leaderboard/cot-leaderboard-results"
 RESULTS_REPO = "cot-leaderboard/cot-eval-results"
+MAX_RETRIALS_PUSH_TO_HUB = 5
+RETRIALS_INTERVAL = 30
 
 
 @dataclass
@@ -46,7 +49,7 @@ class EvalRequest:
     base_model: Optional[str] = None # for adapter models
     revision: str = "main" # commit
     submitted_time: Optional[str] = "2022-05-18T11:40:22.519222"  # random date just so that we can still order requests by date
-    model_type: Optional[str] = None
+    #model_type: Optional[str] = None
     likes: Optional[int] = 0
     params: Optional[int] = None
     license: Optional[str] = ""
@@ -140,7 +143,7 @@ def get_leaderboard_record(
     ) -> dict:
     """aggregate raw results"""
 
-    raw_results = {"base": [], "cot": []}
+    raw_results = {"base": [], "cot": []}  # type: ignore
     for subfolder in raw_results.keys():
         result_files = glob.glob(f"{local_dir_results_dataset}/data/{model}/{subfolder}/**/results*.json", recursive=True)
         for json_filepath in result_files:
@@ -149,8 +152,8 @@ def get_leaderboard_record(
             if "results" in data.keys():
                 raw_results[subfolder].extend([(k,v) for k,v in data["results"].items()])
 
-    deltas = {k: [] for k in tasks}
-    rates = {k: [] for k in tasks}
+    deltas = {k: [] for k in tasks}  # type: ignore
+    rates = {k: [] for k in tasks}  # type: ignore
     for key_cot, record_cot in raw_results["cot"]:
 
         current_task = next(t for t in tasks if t in key_cot.split("_"))
@@ -250,14 +253,25 @@ def main():
             os.makedirs(os.path.dirname(dest_fpath), exist_ok=True)
             shutil.copy(json_filepath, dest_fpath)
             # upload file to hub
-            API.upload_file(
-                path_or_fileobj=json_filepath,
-                path_in_repo=path_in_repo,
-                repo_id=args.results_repo,
-                commit_message=f"Upload results for model {args.model}",
-                create_pr=args.create_pr,
-                repo_type="dataset",
-            )
+            upload_trials = 0
+            while upload_trials < MAX_RETRIALS_PUSH_TO_HUB:
+                try:
+                    API.upload_file(
+                        path_or_fileobj=json_filepath,
+                        path_in_repo=path_in_repo,
+                        repo_id=args.results_repo,
+                        commit_message=f"Upload results for model {args.model}",
+                        create_pr=args.create_pr,
+                        repo_type="dataset",
+                    )
+                    break
+                except Exception as e:
+                    logging.error(f"Error uploading file {json_filepath} to hub: {e}")
+                    upload_trials += 1
+                    time.sleep(RETRIALS_INTERVAL)
+            if upload_trials >= MAX_RETRIALS_PUSH_TO_HUB:
+                logging.error(f"Failed to upload file {json_filepath} to hub.")
+                raise RuntimeError(f"Failed to upload file {json_filepath} to hub.")
 
 
     # update leaderboard
@@ -265,15 +279,26 @@ def main():
     with tempfile.NamedTemporaryFile(mode="w", suffix=".json") as fp:
         json.dump(leaderboard_record, fp, indent=4)
         fp.flush()
-        API.upload_file(
-            path_or_fileobj=fp.name,
-            path_in_repo=f"{args.model}/results_leaderboard.json",
-            repo_id=args.leaderboard_results_repo,
-            commit_message=f"Update leaderboard for model {args.model}",
-            create_pr=args.create_pr,
-            repo_type="dataset",
-        )
-        logging.info(f"Uploaded leaderboard record for model {args.model}: {leaderboard_record}")
+        upload_trials = 0
+        while upload_trials < MAX_RETRIALS_PUSH_TO_HUB:
+            try:
+                API.upload_file(
+                    path_or_fileobj=fp.name,
+                    path_in_repo=f"{args.model}/results_leaderboard.json",
+                    repo_id=args.leaderboard_results_repo,
+                    commit_message=f"Update leaderboard for model {args.model}",
+                    create_pr=args.create_pr,
+                    repo_type="dataset",
+                )
+                logging.info(f"Uploaded leaderboard record for model {args.model}: {leaderboard_record}")
+                break
+            except Exception as e:
+                logging.error(f"Error uploading leaderboard record for model {args.model}: {e}")
+                upload_trials += 1
+                time.sleep(RETRIALS_INTERVAL)
+        if upload_trials >= MAX_RETRIALS_PUSH_TO_HUB:
+            logging.error(f"Failed to upload leaderboard record for model {args.model}.")
+            raise RuntimeError(f"Failed to upload leaderboard record for model {args.model}.")
 
 
     # update eval request status to FINISHED
