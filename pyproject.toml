@@ -27,7 +27,7 @@ classifiers = [
 dependencies = [
     "hf_transfer",
     "huggingface_hub==0.26.2",
-    "requests-2.32.3",
+    "requests==2.32.3",
     "SQLAlchemy==2.0.36",
     "aiohappyeyeballs==2.4.3",
     "aiohttp==3.10.10",
